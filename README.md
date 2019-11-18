@@ -13,6 +13,9 @@ Pour nettoyer tout les fichiers générés il faut utiliser la commande `make cl
 Participation au développement
 ------------------------------
 
+### Créer sa branche
+Chaque personne participant au développement doit avoir sa branche de développement. Pour ce faire, il faut utiliser la suite de commande `git checkout -b <nom>-dev` (ou laisser faire son editeur favoris).
+
 ### Ajouter un fichier source (.c)
 Tout les fichiers source (en `.c`) doivent se trouver dans un dossier (ou sous dossier) de `src`.
 Le `Makefile` n'a pas besoin d'être modifié.
