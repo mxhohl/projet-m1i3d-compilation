@@ -4,7 +4,7 @@ INC_DIR = include
 SRC_DIR = src
 OBJ_DIR = ./obj
 
-CFLAGS = -I$(INC_DIR) -pedantic -Wall
+CFLAGS = -I$(INC_DIR) -pedantic -Wall -Wextra -Wconversion
 LDFLAGS = 
 LDLIBS = -lm
 
