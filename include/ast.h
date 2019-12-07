@@ -7,10 +7,10 @@
 #define HEADER_AST
 
 /*!
- * \enum NodeType
+ * \enum astNodeType
  * Enum définissant les types de nœuds d'AST existants.
  */
-typedef enum e_NodeType {
+typedef enum e_astNodeType {
     AST_STATIC_DOUBLE,
     AST_STATIC_INT,
     AST_OP_PLUS,
@@ -23,7 +23,7 @@ typedef enum e_NodeType {
     AST_OP_DECREMENT,
     AST_BRANCH,
     AST_LOOP
-} NodeType;
+} astNodeType;
 
 struct s_astNode;
 
@@ -61,7 +61,7 @@ typedef struct s_astLoop {
  * Type représentant un nœud d'AST.
  */
 typedef struct s_astNode {
-    NodeType type;  /*!< Le type du nœud */
+    astNodeType type;  /*!< Le type du nœud */
 
     union {
         /*! 
@@ -199,15 +199,15 @@ ASTNode* astCreateOperatorDecrement(ASTNode* right);
 /*!
  * Permet de créer un nœud de type branche (_if_, _if_/_else_).
  * \param condition La condition de l'embranchement
- * \param ifBranch Le nœud éxécuté si la condition est vraie (ou NULL si la 
+ * \param ifBody Le nœud éxécuté si la condition est vraie (ou NULL si la 
  * branche _if_ est vide).
- * \param elseBranch Le nœud éxécuté si la condition est fausse (ou NULL si 
+ * \param elseBody Le nœud éxécuté si la condition est fausse (ou NULL si 
  * la branche _else_ est vide).
  * \return Le nœud créé.
  */
 ASTNode* astCreateBranch(ASTNode* condition, 
-                         ASTNode* ifBranch, 
-                         ASTNode* elseBranch);
+                         ASTNode* ifBody, 
+                         ASTNode* elseBody);
 
 /*!
  * Permet de créer un nœud de type boucle (_while_, _for_).
