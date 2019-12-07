@@ -29,4 +29,7 @@ clean:
 cleanall: clean
 	@rm $(EXE)
 
-.PHONY: all clean cleanall object
+doc:
+	@doxygen Doxyfile
+
+.PHONY: all clean cleanall object doc
