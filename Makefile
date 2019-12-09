@@ -27,7 +27,7 @@ clean:
 	@rm -rf $(OBJ)
 
 cleanall: clean
-	@rm $(EXE)
+	@rm -rf $(EXE) doc
 
 doc:
 	@doxygen Doxyfile
