@@ -1,9 +1,10 @@
 %{
-#include "y.tab.h" 
+#include "y.tab.h"
 void yyerror(const char *erreurMsg);
 %}
 
 %%
+
 \n        { return BACK; }
 
 "#include"  { return INCLUDE; }
@@ -52,6 +53,7 @@ void yyerror(const char *erreurMsg);
 "/"         { return DIV; }
 "%"         { return MODULO; }
 
+<<EOF>> { yyterminate(); }
 
 \"(.*?)\" {
   return STR;

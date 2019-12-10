@@ -2,7 +2,7 @@
     #include <stdio.h>
     int yylex();
     void yyerror(char*);
-    FILE *yyin;
+   // extern FILE *yyin;
 %}
 
 %token VAR ENTIER STR
@@ -27,15 +27,15 @@ header : BACK
        | DEFINE VAR val BACK header { printf("define\n"); }
        ;
 
-main : type MAIN BRACKETL BRACKETR BRACEL core BRACER { printf("on est dans le main\n"); }
+main : type MAIN BRACKETL BRACKETR BRACEL core RETURN ENTIER SM BRACER { printf("on est dans le main\n"); }
      ;
 
 type : INT
      | VOID
      ;
 
-core : expression core
-     | RETURN ENTIER SM { printf("return 0;\n"); }
+core : 
+     | expression core
      ;
 
 expression : declaration
@@ -44,11 +44,12 @@ expression : declaration
 
 declaration : type VAR SM
             | type VAR EGAL val SM
+            | VAR EGAL val SM
             | type VAR EGAL val OP_BINAIRE val SM
             | val OP_BINAIRE val SM
             | tableau SM
-            | tableau EGAL val
-            | tableau EGAL tableau
+            | tableau EGAL val SM
+            | tableau EGAL tableau SM
             ;
 
 tableau : VAR TABL TABR
@@ -69,9 +70,9 @@ OP_BINAIRE : PLUS
            | MODULO
            ;
 
-iteration : WHILE BRACKETL condition BRACKETR BRACEL expression BRACER
-          | DO BRACEL expression BRACER WHILE BRACKETL condition BRACKETR
-          | FOR BRACKETL condition_for BRACKETR BRACEL expression BRACER
+iteration : WHILE BRACKETL condition BRACKETR BRACEL core BRACER
+          | DO BRACEL core BRACER WHILE BRACKETL condition BRACKETR
+          | FOR BRACKETL condition_for BRACKETR BRACEL core BRACER
           ;
 
 condition : ENTIER
@@ -87,30 +88,29 @@ comp : UPPER
      ;
 
 condition_for : SM SM
-              | declaration condition increment
+              | declaration condition SM increment
               ;
 
 increment : VAR op_inc
           | op_inc VAR
           ;
 
-op_inc : "++"
-       | "--"
+op_inc : PLUS PLUS
+       | MINUS MINUS
        ;
-
 
 %%
 
 int main()
 {
-    yyin = fopen("test.c", "r");
+    /*yyin = fopen("test.c", "r");
     if(yyin == NULL)
     {
         fprintf(stderr, "erreur fopen\n");
         return 1;
-    }
-
+    }*/
+    yyparse();
     yylex();
-    fclose(yyin);
+    //fclose(yyin);
     return 0;
 }

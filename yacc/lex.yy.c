@@ -526,7 +526,7 @@ int yy_flex_debug = 0;
 char *yytext;
 #line 1 "c_gram.l"
 #line 2 "c_gram.l"
-#include "y.tab.h" 
+#include "y.tab.h"
 void yyerror(const char *erreurMsg);
 #line 532 "lex.yy.c"
 #line 533 "lex.yy.c"
@@ -748,7 +748,8 @@ YY_DECL
 	{
 #line 6 "c_gram.l"
 
-#line 752 "lex.yy.c"
+
+#line 753 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -808,248 +809,250 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 7 "c_gram.l"
+#line 8 "c_gram.l"
 { return BACK; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 9 "c_gram.l"
+#line 10 "c_gram.l"
 { return INCLUDE; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 10 "c_gram.l"
+#line 11 "c_gram.l"
 { return DEFINE; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 11 "c_gram.l"
+#line 12 "c_gram.l"
 { return MAIN; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 12 "c_gram.l"
+#line 13 "c_gram.l"
 { return RETURN; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 13 "c_gram.l"
+#line 14 "c_gram.l"
 { return PRINTF; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 15 "c_gram.l"
+#line 16 "c_gram.l"
 { return COM; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 16 "c_gram.l"
+#line 17 "c_gram.l"
 { return DOT; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 17 "c_gram.l"
+#line 18 "c_gram.l"
 { return DOT2; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 18 "c_gram.l"
+#line 19 "c_gram.l"
 { return SM; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 20 "c_gram.l"
+#line 21 "c_gram.l"
 { return WHILE; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 21 "c_gram.l"
+#line 22 "c_gram.l"
 { return DO; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 22 "c_gram.l"
+#line 23 "c_gram.l"
 { return FOR; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 23 "c_gram.l"
+#line 24 "c_gram.l"
 { return IF; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 24 "c_gram.l"
+#line 25 "c_gram.l"
 { return ELSE; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 25 "c_gram.l"
+#line 26 "c_gram.l"
 { return SWITCH; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 26 "c_gram.l"
+#line 27 "c_gram.l"
 { return CASE; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 27 "c_gram.l"
+#line 28 "c_gram.l"
 { return BREAK; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 29 "c_gram.l"
+#line 30 "c_gram.l"
 { return INT; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 30 "c_gram.l"
+#line 31 "c_gram.l"
 { return VOID; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 32 "c_gram.l"
+#line 33 "c_gram.l"
 { return EQ; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 33 "c_gram.l"
+#line 34 "c_gram.l"
 { return INEQ; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 34 "c_gram.l"
+#line 35 "c_gram.l"
 { return OR; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 35 "c_gram.l"
+#line 36 "c_gram.l"
 { return AND; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 36 "c_gram.l"
+#line 37 "c_gram.l"
 { return LOWEREG; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 37 "c_gram.l"
+#line 38 "c_gram.l"
 { return UPPEREG; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 38 "c_gram.l"
+#line 39 "c_gram.l"
 { return LOWER; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 39 "c_gram.l"
+#line 40 "c_gram.l"
 { return UPPER; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 41 "c_gram.l"
+#line 42 "c_gram.l"
 { return BRACEL; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 42 "c_gram.l"
+#line 43 "c_gram.l"
 { return BRACER; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 43 "c_gram.l"
+#line 44 "c_gram.l"
 { return BRACKETL; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 44 "c_gram.l"
+#line 45 "c_gram.l"
 { return BRACKETR; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 45 "c_gram.l"
+#line 46 "c_gram.l"
 { return TABL; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 46 "c_gram.l"
+#line 47 "c_gram.l"
 { return TABR; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 48 "c_gram.l"
+#line 49 "c_gram.l"
 { return EGAL; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 49 "c_gram.l"
+#line 50 "c_gram.l"
 { return PLUS; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 50 "c_gram.l"
+#line 51 "c_gram.l"
 { return MINUS; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 51 "c_gram.l"
+#line 52 "c_gram.l"
 { return MULT; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 52 "c_gram.l"
+#line 53 "c_gram.l"
 { return DIV; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 53 "c_gram.l"
+#line 54 "c_gram.l"
 { return MODULO; }
+	YY_BREAK
+case YY_STATE_EOF(INITIAL):
+#line 56 "c_gram.l"
+{ yyterminate(); }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 56 "c_gram.l"
+#line 58 "c_gram.l"
 {
   return STR;
 } /* Ici on reconnait une chaîne de caractère entre "" et on la renvoie */
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 61 "c_gram.l"
+#line 63 "c_gram.l"
 {
   return VAR;
 } /* Permet de gérer les variables et de les renvoyeré */
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 65 "c_gram.l"
+#line 67 "c_gram.l"
 {
   return ENTIER;
 } /* De même pour les entiers */
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 69 "c_gram.l"
+#line 71 "c_gram.l"
 ;
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 70 "c_gram.l"
+#line 72 "c_gram.l"
 ;
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 71 "c_gram.l"
+#line 73 "c_gram.l"
 yyerror("Caractere non valide");
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 73 "c_gram.l"
+#line 75 "c_gram.l"
 ECHO;
 	YY_BREAK
-#line 1051 "lex.yy.c"
-case YY_STATE_EOF(INITIAL):
-	yyterminate();
+#line 1056 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2052,7 +2055,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 73 "c_gram.l"
+#line 75 "c_gram.l"
 
 
 void yyerror(const char *erreurMsg) {
