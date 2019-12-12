@@ -1,115 +1,71 @@
 %{
-//#include "y.tab.h" 
+#include "y.tab.h"
 void yyerror(const char *erreurMsg);
 %}
 
 %%
-\n        { //return BACK;  
-}
 
-"#include"  { //return INCLUDE; 
-}
-"#define"   { //return DEFINE; 
-}
-"main"      { //return MAIN; 
-}
-"return"    { //return RETOUR; 
-}
-"printf"    { //return PRINTF; 
-}
+\n        { printf("%s",yytext); }
 
-","         { //return COM; 
-}
-"."         { //return DOT; 
-}
-":"         { //return 2DOT; 
-}
-";"         { //return SM; 
-}
+"#include"  { return INCLUDE; }
+"#define"   { return DEFINE; }
+"main"      { return MAIN; }
+"return"    { return RETURN; }
+"printf"    { return PRINTF; }
 
-"while"     { //return WHILE; 
-}
-"do"        { //return DO; 
-}
-"for"       { //return FOR; 
-}
-"if"        { //return IF; 
-}
-"else"      { //return ELSE; 
-}
-"switch"    { //return SWITCH; 
-}
-"case"      { //return CASE; 
-}
-"break"     { //return break; 
-}
+","         { return COM; }
+"."         { return DOT; }
+":"         { return DOT2; }
+";"         { return SM; }
 
-"int"       { //return INT; 
-}
-"void"      { //return VOID; 
-}
+"while"     { return WHILE; }
+"do"        { return DO; }
+"for"       { return FOR; }
+"if"        { return IF; }
+"else"      { return ELSE; }
+"switch"    { return SWITCH; }
+"case"      { return CASE; }
+"break"     { return BREAK; }
 
-"=="        { //return EQ; 
-}
-"!="        { //return INEQ; 
-}
-"||"        { //return OR; 
-}
-"&&"        { //return AND; 
-}
-"<="        { //return LOWEREG; 
-}
-">="        { //return UPPEREG; 
-}
-"<"         { //return LOWER; 
-}
-">"         { //return UPPER; 
-}
+"int"       { return INT; }
+"void"      { return VOID; }
 
-"{"         { //return BRACEL; 
-}
-"}"         { //return BRACER; 
-}
-"("         { //return BRACKETL; 
-}
-")"         { //return BRACKETR; 
-}
-"["         { //return BRACKETL; 
-}
-"]"         { //return BRACKETR; 
-}
+"=="        { return EQ; }
+"!="        { return INEQ; }
+"||"        { return OR; }
+"&&"        { return AND; }
+"<="        { return LOWEREG; }
+">="        { return UPPEREG; }
+"<"         { return LOWER; }
+">"         { return UPPER; }
 
+"{"         { return BRACEL; }
+"}"         { return BRACER; }
+"("         { return BRACKETL; }
+")"         { return BRACKETR; }
+"["         { return TABL; }
+"]"         { return TABR; }
 
-"="         { //return EGAL; 
-}
-"+"         { //return PLUS; 
-}
-"-"         { //return MINUS; 
-}
-"*"         { //return MULT; 
-}
-"/"         { //return DIV; 
-}
-"%"         { //return POURC; 
-}
+"="         { return EGAL; }
+"+"         { return PLUS; }
+"-"         { return MINUS; }
+"*"         { return MULT; }
+"/"         { return DIV; }
+"%"         { return MODULO; }
 
+<<EOF>> { yyterminate(); }
 
 \"(.*?)\" {
-  //yylval.var = (char*) malloc(sizeof(char)*(strlen(yytext)+1)); 
-  //strcpy(yylval.var,yytext);
-  //return STR;
+  return STR;
 } /* Ici on reconnait une chaîne de caractère entre "" et on la renvoie */
 
 
 [a-zA-Z]+[0-9]*[a-zA-Z]* {
-  //yylval.var = (char*) malloc(sizeof(char)*(strlen(yytext)+1));
-  //strcpy(yylval.var,yytext);
-  //return VAR;
+  return VAR;
 } /* Permet de gérer les variables et de les renvoyeré */
 
 [0-9]+	{
-  //yylval.valeur = atof(yytext);
-  //return ENTIER;
+  return ENTIER;
 } /* De même pour les entiers */
 
 [ \t]	;
@@ -121,15 +77,4 @@ void yyerror(const char *erreurMsg);
 void yyerror(const char *erreurMsg) {
   fprintf(stderr, "\n Erreur '%s' sur '%s'.\n", erreurMsg, yytext);
   exit(EXIT_FAILURE);
-}
-
-int main(){
-	yyin=fopen("test.txt", "r");
-	if(yyin == NULL){return 1;}
-
-	
-	yylex();
-	//printf("%d",c);
-	fclose(yyin);
-return 0;
 }
