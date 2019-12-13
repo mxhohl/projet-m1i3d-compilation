@@ -5,10 +5,8 @@ void yyerror(const char *erreurMsg);
 
 %%
 
-\n        { return BACK; }
-
-"#include"  { return INCLUDE; }
-"#define"   { return DEFINE; }
+"include"  { return INCLUDE; }
+"define"   { return DEFINE; }
 "main"      { return MAIN; }
 "return"    { return RETURN; }
 "printf"    { return PRINTF; }
@@ -17,6 +15,7 @@ void yyerror(const char *erreurMsg);
 "."         { return DOT; }
 ":"         { return DOT2; }
 ";"         { return SM; }
+"#"         { return DIESE; }
 
 "while"     { return WHILE; }
 "do"        { return DO; }
@@ -46,14 +45,14 @@ void yyerror(const char *erreurMsg);
 "["         { return TABL; }
 "]"         { return TABR; }
 
-"="         { return EGAL; }
+"="         { return ASSIGN; }
 "+"         { return PLUS; }
 "-"         { return MINUS; }
 "*"         { return MULT; }
 "/"         { return DIV; }
 "%"         { return MODULO; }
 
-<<EOF>> { yyterminate(); }
+<<EOF>>     return END;
 
 \"(.*?)\" {
   return STR;
@@ -62,14 +61,18 @@ void yyerror(const char *erreurMsg);
 
 [a-zA-Z]+[0-9]*[a-zA-Z]* {
   return VAR;
-} /* Permet de gérer les variables et de les renvoyeré */
+} /* Permet de gérer les variables et de les renvoyer */
+
+[a-zA-Z]+[0-9]*[a-zA-Z]*\.[a-z] {
+  return EXT;
+} /* Retourne extension de fichier */
 
 [0-9]+	{
   return ENTIER;
 } /* De même pour les entiers */
 
-[ \t]	;
-'' ;
+[ \t\n]	;
+
 .	yyerror("Caractere non valide");
 
 %%

@@ -2,68 +2,74 @@
     #include <stdio.h>
     int yylex();
     void yyerror(char*);
-   // extern FILE *yyin;
+    FILE *yyin;
 %}
 
-%token VAR ENTIER STR
-%token BACK
-%token DO WHILE FOR IF ELSE BREAK SWITCH CASE RETURN MAIN 
-%token INCLUDE DEFINE
-%token UPPER UPPEREG LOWER LOWEREG EQ INEQ PLUS MINUS MULT DIV MODULO EGAL
+%token VAR ENTIER STR EXT
+%token END
+%token DO WHILE FOR IF ELSE BREAK SWITCH CASE RETURN 
+%token INCLUDE DEFINE DIESE
+%token UPPER UPPEREG LOWER LOWEREG EQ INEQ PLUS MINUS MULT DIV MODULO ASSIGN
 %token BRACEL BRACER BRACKETL BRACKETR SM COM DOT DOT2 TABL TABR
 %token INT VOID
-%token PRINTF
+%token PRINTF MAIN
 %token AND OR
 
 %%
 
-axiom : main { printf("Match\n"); return 0; }
-      | header main { printf("Match\n"); return 0; }
+axiom : header main { printf("Match\n"); return 0; }
       ;
 
-header : BACK
-       | INCLUDE STR BACK header
-       | INCLUDE LOWER VAR UPPER BACK header { printf("include <>\n"); }
-       | DEFINE VAR val BACK header { printf("define\n"); }
+header :
+       | DIESE INCLUDE STR header
+       | DIESE INCLUDE LOWER EXT UPPER header
+       | DIESE DEFINE VAR val header
        ;
 
-main : type MAIN BRACKETL BRACKETR BRACEL core RETURN ENTIER SM BRACER { printf("on est dans le main\n"); }
+main : type MAIN BRACKETL BRACKETR BRACEL core RETURN ENTIER SM BRACER END
      ;
 
 type : INT
      | VOID
      ;
 
-core : 
+core :
      | expression core
      ;
 
-expression : declaration
-           | iteration
+expression : declaration { printf("declaration\n"); }
+           | iteration { printf("iteration\n"); }
+           | function { printf("function\n"); }
            ;
 
 declaration : type VAR SM
-            | type VAR EGAL val SM
-            | VAR EGAL val SM
-            | type VAR EGAL val OP_BINAIRE val SM
-            | val OP_BINAIRE val SM
-            | tableau SM
-            | tableau EGAL val SM
-            | tableau EGAL tableau SM
+            | type VAR ASSIGN val SM
+            | VAR ASSIGN val SM
+            | type VAR ASSIGN val op_binaire val SM
+            | val op_binaire val SM
+            | type tableau SM
+            | tableau ASSIGN val SM
+            | tableau ASSIGN tableau SM
             ;
 
 tableau : VAR TABL TABR
         | VAR TABL ENTIER TABR
         | VAR TABL VAR TABR
         | VAR TABL increment TABR
+        | VAR TABL operation TABR
         ;
+
+operation : VAR op_binaire ENTIER
+          | VAR op_binaire VAR
+          | ENTIER op_binaire VAR
+          ;
 
 val : VAR
     | ENTIER
     | STR
     ;
 
-OP_BINAIRE : PLUS
+op_binaire : PLUS
            | MINUS
            | MULT
            | DIV
@@ -73,6 +79,8 @@ OP_BINAIRE : PLUS
 iteration : WHILE BRACKETL condition BRACKETR BRACEL core BRACER
           | DO BRACEL core BRACER WHILE BRACKETL condition BRACKETR
           | FOR BRACKETL condition_for BRACKETR BRACEL core BRACER
+          | WHILE BRACKETL condition BRACKETR expression
+          | FOR BRACKETL condition_for BRACKETR expression
           ;
 
 condition : ENTIER
@@ -99,18 +107,28 @@ op_inc : PLUS PLUS
        | MINUS MINUS
        ;
 
+function : PRINTF BRACKETL STR BRACKETR SM
+         | PRINTF BRACKETL STR COM variable BRACKETR SM
+         ;
+
+variable : tableau
+         | VAR
+         | tableau COM variable
+         | VAR COM variable
+         ;
+
 %%
 
 int main()
 {
-    /*yyin = fopen("test.c", "r");
+    yyin = fopen("test.c", "r");
     if(yyin == NULL)
     {
         fprintf(stderr, "erreur fopen\n");
         return 1;
-    }*/
+    }
     yyparse();
     yylex();
-    //fclose(yyin);
+    fclose(yyin);
     return 0;
 }

@@ -48,92 +48,96 @@ extern int yydebug;
     VAR = 258,
     ENTIER = 259,
     STR = 260,
-    BACK = 261,
-    DO = 262,
-    WHILE = 263,
-    FOR = 264,
-    IF = 265,
-    ELSE = 266,
-    BREAK = 267,
-    SWITCH = 268,
-    CASE = 269,
-    RETURN = 270,
-    MAIN = 271,
+    EXT = 261,
+    END = 262,
+    DO = 263,
+    WHILE = 264,
+    FOR = 265,
+    IF = 266,
+    ELSE = 267,
+    BREAK = 268,
+    SWITCH = 269,
+    CASE = 270,
+    RETURN = 271,
     INCLUDE = 272,
     DEFINE = 273,
-    UPPER = 274,
-    UPPEREG = 275,
-    LOWER = 276,
-    LOWEREG = 277,
-    EQ = 278,
-    INEQ = 279,
-    PLUS = 280,
-    MINUS = 281,
-    MULT = 282,
-    DIV = 283,
-    MODULO = 284,
-    EGAL = 285,
-    BRACEL = 286,
-    BRACER = 287,
-    BRACKETL = 288,
-    BRACKETR = 289,
-    SM = 290,
-    COM = 291,
-    DOT = 292,
-    DOT2 = 293,
-    TABL = 294,
-    TABR = 295,
-    INT = 296,
-    VOID = 297,
-    PRINTF = 298,
-    AND = 299,
-    OR = 300
+    DIESE = 274,
+    UPPER = 275,
+    UPPEREG = 276,
+    LOWER = 277,
+    LOWEREG = 278,
+    EQ = 279,
+    INEQ = 280,
+    PLUS = 281,
+    MINUS = 282,
+    MULT = 283,
+    DIV = 284,
+    MODULO = 285,
+    ASSIGN = 286,
+    BRACEL = 287,
+    BRACER = 288,
+    BRACKETL = 289,
+    BRACKETR = 290,
+    SM = 291,
+    COM = 292,
+    DOT = 293,
+    DOT2 = 294,
+    TABL = 295,
+    TABR = 296,
+    INT = 297,
+    VOID = 298,
+    PRINTF = 299,
+    MAIN = 300,
+    AND = 301,
+    OR = 302
   };
 #endif
 /* Tokens.  */
 #define VAR 258
 #define ENTIER 259
 #define STR 260
-#define BACK 261
-#define DO 262
-#define WHILE 263
-#define FOR 264
-#define IF 265
-#define ELSE 266
-#define BREAK 267
-#define SWITCH 268
-#define CASE 269
-#define RETURN 270
-#define MAIN 271
+#define EXT 261
+#define END 262
+#define DO 263
+#define WHILE 264
+#define FOR 265
+#define IF 266
+#define ELSE 267
+#define BREAK 268
+#define SWITCH 269
+#define CASE 270
+#define RETURN 271
 #define INCLUDE 272
 #define DEFINE 273
-#define UPPER 274
-#define UPPEREG 275
-#define LOWER 276
-#define LOWEREG 277
-#define EQ 278
-#define INEQ 279
-#define PLUS 280
-#define MINUS 281
-#define MULT 282
-#define DIV 283
-#define MODULO 284
-#define EGAL 285
-#define BRACEL 286
-#define BRACER 287
-#define BRACKETL 288
-#define BRACKETR 289
-#define SM 290
-#define COM 291
-#define DOT 292
-#define DOT2 293
-#define TABL 294
-#define TABR 295
-#define INT 296
-#define VOID 297
-#define PRINTF 298
-#define AND 299
-#define OR 300
+#define DIESE 274
+#define UPPER 275
+#define UPPEREG 276
+#define LOWER 277
+#define LOWEREG 278
+#define EQ 279
+#define INEQ 280
+#define PLUS 281
+#define MINUS 282
+#define MULT 283
+#define DIV 284
+#define MODULO 285
+#define ASSIGN 286
+#define BRACEL 287
+#define BRACER 288
+#define BRACKETL 289
+#define BRACKETR 290
+#define SM 291
+#define COM 292
+#define DOT 293
+#define DOT2 294
+#define TABL 295
+#define TABR 296
+#define INT 297
+#define VOID 298
+#define PRINTF 299
+#define MAIN 300
+#define AND 301
+#define OR 302
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
