@@ -45,8 +45,8 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    VAR = 258,
-    ENTIER = 259,
+    ENTIER = 258,
+    VAR = 259,
     STR = 260,
     EXT = 261,
     END = 262,
@@ -93,8 +93,8 @@ extern int yydebug;
   };
 #endif
 /* Tokens.  */
-#define VAR 258
-#define ENTIER 259
+#define ENTIER 258
+#define VAR 259
 #define STR 260
 #define EXT 261
 #define END 262
@@ -141,7 +141,17 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+
+union YYSTYPE
+{
+#line 10 "c_gram.y" /* yacc.c:1909  */
+
+  char* str;
+
+#line 152 "y.tab.h" /* yacc.c:1909  */
+};
+
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
