@@ -1,13 +1,17 @@
-16# define N# include "truc.h"
-# include < stdio.h >
-int int i ;
-int t [ 50 ];
-0i = ;
-<44i+ +i;+i 5t [ ]0= ;
-for ( ) {
- }
-<1i+ +it [ ]printf ( "qqch %d" , ) ;
-while ( )
-main ( ) {
- return 0 ;
+#include <stdio.h>
+#include "truc.h"
+#define N 16
+#include "sources.h"
+
+int main(){
+int i ;
+int t[50];
+for(i =0;
+i<44;i++) {
+	z9z =i;
+printf( "oui" );
+}
+while( i<1)
+	printf( "qqch %d" , t[i]);
+return 0;
  }

@@ -7,10 +7,11 @@ int main(){
     int t[50];
     for(i=0; i<44; i++)
     {
-        t[i+5]= 0;
+        z9z = i;
+        printf("oui");
     }
     while(i<1)
-        printf("qqch %d", t[i++]);
+        printf("qqch %d", t[i]);
     
     return 0;
 }
