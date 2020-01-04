@@ -2,9 +2,9 @@
 ## PROJECT SPECIFIC ##
 ######################
 
-compiler
-obj
 doc
+build
+test.c
 
 
 ######################

@@ -64,3 +64,8 @@ doivent êtres inclus doivent commencer par l'entête suivante :
 
 Pour la documentation du code, on se basera sur le format 
 [Doxygen](http://doxygen.nl/manual/docblocks.html) "Qt Style".
+
+Notes pour le rapport
+---------------------
+Les fonctionalités du C suivantes ne sont pas supportés :
+ - Les constantes flotantes commençant par un `.` (On gère `0.` et `0.0` mais pas `.0`)
