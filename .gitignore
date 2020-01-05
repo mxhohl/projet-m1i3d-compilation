@@ -5,6 +5,7 @@
 doc
 build
 test.c
+.vscode
 
 
 ######################
