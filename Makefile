@@ -81,10 +81,6 @@ $(EXE): $(SRC_OBJS)
 	@echo "	LD	$@"
 	@$(CC) $(LDFLAGS) $^ -o $@
 
-lexyacc_folder:
-	@mkdir -p $(LYO_DIR)
-
-
 clean:
 	@echo "	RM	$(BUILDDIR)/*"
 	@rm -rf $(ARTIFACTS)
