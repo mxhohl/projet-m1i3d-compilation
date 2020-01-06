@@ -95,6 +95,17 @@ ASTNode* astCreateStaticInt(int value) {
     return node;
 }
 
+ASTNode* astCreateVariableRef(char* varName) {
+    ASTNode* node;
+
+    if((node = malloc(sizeof(struct s_astNode)))) {
+        node->type = AST_VARIABLE_REF;
+        node->variableRef = varName;
+    }
+
+    return node;
+}
+
 ASTNode* astCreateOperatorPlus(ASTNode* right) {
     return astCreateUnaryOperator(right, AST_OP_PLUS);
 }
@@ -127,6 +138,26 @@ ASTNode* astCreateOperatorDecrement(ASTNode* right) {
     return astCreateUnaryOperator(right, AST_OP_DECREMENT);
 }
 
+ASTNode* astCreateOperatorEqual(ASTNode* right, ASTNode* left) {
+    return astCreateBinaryOperator(right, left, AST_OP_EQ);
+}
+
+ASTNode* astCreateOperatorNotEqual(ASTNode* right, ASTNode* left) {
+    return astCreateBinaryOperator(right, left, AST_OP_NEQ);
+}
+
+ASTNode* astCreateAssignment(char* varName, ASTNode* value) {
+    ASTNode* node;
+
+    if ((node = malloc(sizeof(struct s_astAssignment)))) {
+        node->type = AST_ASSIGN;
+        node->assignment.varName = varName;
+        node->assignment.value = value;
+    }
+
+    return node;
+}
+
 ASTNode* astCreateBranch(ASTNode* condition, 
                          ASTNode* ifBody, 
                          ASTNode* elseBody) {
@@ -144,4 +175,8 @@ ASTNode* astCreateBranch(ASTNode* condition,
 
 ASTNode* astCreateLoop(ASTNode* condition, ASTNode* body) {
     return astCreateBinaryOperator(condition, body, AST_LOOP);
+}
+
+ASTNode* astCreateInstructionList(ASTNode* current, ASTNode* next) {
+    return astCreateBinaryOperator(current, next, AST_INST_LIST);
 }
