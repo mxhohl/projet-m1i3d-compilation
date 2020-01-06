@@ -9,7 +9,7 @@
 
 extern ASTNode* parse_file(FILE*);
 
-void doJob();
+void doJob(clParameters* parameters);
 
 int main(int argc, char** argv) {
     
@@ -26,25 +26,22 @@ int main(int argc, char** argv) {
         parameters->outFile
     );
 
-    /* doJob(); */
+    doJob(parameters);
 
     clFree(parameters);
 
     return 0;
 }
 
-void doJob() {
-    const char* const filePath = "test.c";
+void doJob(clParameters* parameters) {
 
-    FILE* inFile = fopen(filePath, "r");
+    FILE* inFile = fopen(parameters->inFile, "r");
     if (!inFile) {
-        fprintf(stderr, "Unable to open file %s\n", filePath);
+        fprintf(stderr, "Unable to open file %s\n", parameters->inFile);
         exit(1);
     }
 
     SymbolTable* st = stCreate();
-
-    puts("Parsing...");
 
     ASTNode* ast = parse_file(inFile);
 
@@ -53,9 +50,15 @@ void doJob() {
         exit(10);
     }
 
-    puts("Done");
+    if (parameters->printTos) {
+        stPrint(st, stdout);
+    }
 
-    stPrint(st, stdout);
+    /* TODO: print AST if parameter */
+
+    /* TODO: replace paterns with functions calls */
+
+    /* TODO: print AST if parameter */
 
     stFree(st);
 }

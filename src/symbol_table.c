@@ -240,6 +240,10 @@ const char* stAddStaticDouble(SymbolTable* st, double value) {
     return nameBuff;
 }
 
+int stSymbolExist(SymbolTable* st, char* name) {
+    return getSymbol(st, name) != NULL;
+}
+
 DataType stGetType(SymbolTable* st, char* name) {
     Symbol* symbol;
     if ((symbol = getSymbol(st, name))) {
@@ -249,3 +253,23 @@ DataType stGetType(SymbolTable* st, char* name) {
     return DT_UNKNOWN;
 }
 
+int stIsStatic(SymbolTable* st, char* name) {
+    Symbol* symbol = getSymbol(st, name);
+    return symbol && symbol->static_value;
+}
+
+int stGetStaticIntValuePtr(SymbolTable* st, char* name) {
+    Symbol* symbol = getSymbol(st, name);
+    if (!symbol || !symbol->static_value) {
+        return 0;
+    }
+    return symbol->static_value->i;
+}
+
+double setGetStaticDoubleValuePtr(SymbolTable* st, char* name) {
+    Symbol* symbol = getSymbol(st, name);
+    if (!symbol || !symbol->static_value) {
+        return 0.;
+    }
+    return symbol->static_value->d;
+}

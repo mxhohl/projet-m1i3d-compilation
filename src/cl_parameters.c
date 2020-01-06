@@ -71,7 +71,7 @@ clParameters* clGetParameters(int argc, char** argv) {
     }
 
     if (!parameters->inFile) {
-        fputs("Le fichier d'entré n'a pas été spécifier.\n", stderr);
+        fputs("Le fichier d'entré n'a pas été spécifié.\n", stderr);
         clPrintUsage();
         clFree(parameters);
         exit(21);

@@ -73,6 +73,14 @@ const char* stAddStaticInt(SymbolTable* st, int value);
 const char* stAddStaticDouble(SymbolTable* st, double value);
 
 /*!
+ * Permet de verifier si un symbole est déjà dans la table.
+ * \param st La table où regarder.
+ * \param name Le nom du symbole à chercher.
+ * \return Vrai si le symbole est présent, non sinon.
+ */
+int stSymbolExist(SymbolTable* st, char* name);
+
+/*!
  * Permet de récupérer le type d'une variable par son nom.
  * \param st La table où chercher le symbole.
  * \param name Le nom du symbole recherché.
@@ -81,6 +89,30 @@ const char* stAddStaticDouble(SymbolTable* st, double value);
  */
 DataType stGetType(SymbolTable* st, char* name);
 
-/* TODO: add isStatic, getStaticValue */
+/*!
+ * Permet de savoir si un symbole est statique.
+ * \param st La table où chercher.
+ * \param name Le nom du symbole.
+ * \return vrai si le symbole existe et est statique, faux sinon.
+ */
+int stIsStatic(SymbolTable* st, char* name);
+
+/*!
+ * Permet de récupérer la valeur d'un symbole statique de type int.
+ * \param st La table où chercher le symbole.
+ * \param name Le nom du symbole recherché.
+ * \return La valeur du symbole ou 0 si le symbole n'est pas statique ou 
+ * n'existe pas.
+ */
+int stGetStaticIntValuePtr(SymbolTable* st, char* name);
+
+/*!
+ * Permet de récupérer la valeur d'un symbole statique de type double.
+ * \param st La table où chercher le symbole.
+ * \param name Le nom du symbole recherché.
+ * \return La valeur du symbole ou 0 si le symbole n'est pas statique ou 
+ * n'existe pas.
+ */
+double setGetStaticDoubleValuePtr(SymbolTable* st, char* name);
 
 #endif /* HEADER_SYMBOL_TABLE */
