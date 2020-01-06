@@ -40,8 +40,16 @@ PRINT           "printf("{QUOTED_STR}[^)]*")"
 "while"         { return WHILE; }
 "for"           { return FOR; }
 
-{PRINT}         { size_t len = yyleng -7;
+{PRINT}         { size_t len = yyleng -6;
                   char* content = malloc(sizeof(char) * len);
+                  if (!content) {
+                      logError(
+                          "Impossible d'allouer la mémoire pour les "
+                          "paramètres '%s' du printf ligne %d.\n",
+                          yytext,
+                          yylineno
+                      );
+                  }
                   sscanf(yytext, "printf(%s)", content);
                   yylval.str = content;
                   return PRINTF; }

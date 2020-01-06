@@ -1,5 +1,7 @@
 #include <stdlib.h>
+#include <string.h>
 
+#include "logging.h"
 #include "ast.h"
 
 
@@ -7,7 +9,7 @@
 /**********       Fonctions Outils       **********/
 /**************************************************/
 
-static ASTNode* astCreateUnaryOperator(ASTNode* child, astNodeType type) {
+static ASTNode* createUnaryOperator(ASTNode* child, astNodeType type) {
     ASTNode* node;
 
     if ((node = malloc(sizeof(struct s_astNode)))) {
@@ -18,8 +20,8 @@ static ASTNode* astCreateUnaryOperator(ASTNode* child, astNodeType type) {
     return node;
 }
 
-static ASTNode* astCreateBinaryOperator(ASTNode* first, ASTNode* second, 
-                                        astNodeType type) {
+static ASTNode* createBinaryOperator(ASTNode* first, ASTNode* second, 
+                                     astNodeType type) {
     ASTNode* node;
 
     if ((node = malloc(sizeof(struct s_astNode)))) {
@@ -29,6 +31,20 @@ static ASTNode* astCreateBinaryOperator(ASTNode* first, ASTNode* second,
     }
 
     return node;
+}
+
+static char* copyStr(char* str) {
+    char* newStr = malloc(sizeof(char) * (strlen(str) + 1));
+    if (!newStr) {
+        logError(
+            "Impossible d'allouer la mémoire pour dupliquer "
+            "la chaine '%s' de l'AST.\n",
+            str
+        );
+        return NULL;
+    }
+    strcpy(newStr, str);
+    return newStr;
 }
 
 
@@ -44,10 +60,16 @@ void astFree(ASTNode* ast) {
     switch (ast->type) {
     case AST_STATIC_DOUBLE:
     case AST_STATIC_INT:
+        break;
+
     case AST_VARIABLE_REF:
     case AST_VAR_DECLARATION:
-    case AST_ARRAY_DECLARATION:
     case AST_PRINTF:
+        free(ast->variableRef);
+        break;
+
+    case AST_ARRAY_DECLARATION:
+        free(ast->arrayDeclaration.varName);
         break;
 
     case AST_OP_PLUS:
@@ -61,10 +83,12 @@ void astFree(ASTNode* ast) {
         break;
 
     case AST_VAR_ASSIGN:
+        free(ast->varAssignment.varName);
         astFree(ast->varAssignment.value);
         break;
     
     case AST_ARRAY_ASSIGN:
+        free(ast->arrayAssignment.varName);
         astFree(ast->arrayAssignment.value);
         astFree(ast->arrayAssignment.pos);
         break;
@@ -134,90 +158,90 @@ ASTNode* astCreateVariableRef(char* varName) {
 
     if((node = malloc(sizeof(struct s_astNode)))) {
         node->type = AST_VARIABLE_REF;
-        node->variableRef = varName;
+        node->variableRef = copyStr(varName);
     }
 
     return node;
 }
 
 ASTNode* astCreateOperatorPlus(ASTNode* child) {
-    return astCreateUnaryOperator(child, AST_OP_PLUS);
+    return createUnaryOperator(child, AST_OP_PLUS);
 }
 
 ASTNode* astCreateOperatorMinus(ASTNode* child) {
-    return astCreateUnaryOperator(child, AST_OP_MINUS);
+    return createUnaryOperator(child, AST_OP_MINUS);
 }
 
 ASTNode* astCreateOperatorAdd(ASTNode* left, ASTNode* right) {
-    return astCreateBinaryOperator(right, left, AST_OP_ADD);
+    return createBinaryOperator(right, left, AST_OP_ADD);
 }
 
 ASTNode* astCreateOperatorSubstract(ASTNode* left, ASTNode* right) {
-    return astCreateBinaryOperator(right, left, AST_OP_SUBSTRACT);
+    return createBinaryOperator(right, left, AST_OP_SUBSTRACT);
 }
 
 ASTNode* astCreateOperatorMultiply(ASTNode* left, ASTNode* right) {
-    return astCreateBinaryOperator(right, left, AST_OP_MULTIPLY);
+    return createBinaryOperator(right, left, AST_OP_MULTIPLY);
 }
 
 ASTNode* astCreateOperatorDivide(ASTNode* left, ASTNode* right) {
-    return astCreateBinaryOperator(right, left, AST_OP_DIVIDE);
+    return createBinaryOperator(right, left, AST_OP_DIVIDE);
 }
 
 ASTNode* astCreateOperatorPrefIncrement(ASTNode* child) {
-    return astCreateUnaryOperator(child, AST_OP_PREF_INCREMENT);
+    return createUnaryOperator(child, AST_OP_PREF_INCREMENT);
 }
 
 ASTNode* astCreateOperatorPrefDecrement(ASTNode* child) {
-    return astCreateUnaryOperator(child, AST_OP_PREF_DECREMENT);
+    return createUnaryOperator(child, AST_OP_PREF_DECREMENT);
 }
 
 ASTNode* astCreateOperatorPostIncrement(ASTNode* child) {
-    return astCreateUnaryOperator(child, AST_OP_POST_INCREMENT);
+    return createUnaryOperator(child, AST_OP_POST_INCREMENT);
 }
 
 ASTNode* astCreateOperatorPostDecrement(ASTNode* child) {
-    return astCreateUnaryOperator(child, AST_OP_POST_DECREMENT);
+    return createUnaryOperator(child, AST_OP_POST_DECREMENT);
 }
 
 ASTNode* astCreateOperatorLower(ASTNode* left, ASTNode* right) {
-    return astCreateBinaryOperator(right, left, AST_OP_LO);
+    return createBinaryOperator(right, left, AST_OP_LO);
 }
 
 ASTNode* astCreateOperatorLowerEqual(ASTNode* left, ASTNode* right) {
-    return astCreateBinaryOperator(right, left, AST_OP_LE);
+    return createBinaryOperator(right, left, AST_OP_LE);
 }
 
 ASTNode* astCreateOperatorGreater(ASTNode* left, ASTNode* right) {
-    return astCreateBinaryOperator(right, left, AST_OP_GT);
+    return createBinaryOperator(right, left, AST_OP_GT);
 }
 
 ASTNode* astCreateOperatorGreaterEqual(ASTNode* left, ASTNode* right) {
-    return astCreateBinaryOperator(right, left, AST_OP_GE);
+    return createBinaryOperator(right, left, AST_OP_GE);
 }
 
 ASTNode* astCreateOperatorEqual(ASTNode* left, ASTNode* right) {
-    return astCreateBinaryOperator(right, left, AST_OP_EQ);
+    return createBinaryOperator(right, left, AST_OP_EQ);
 }
 
 ASTNode* astCreateOperatorNotEqual(ASTNode* left, ASTNode* right) {
-    return astCreateBinaryOperator(right, left, AST_OP_NEQ);
+    return createBinaryOperator(right, left, AST_OP_NEQ);
 }
 
 ASTNode* astCreateOperatorNot(ASTNode* child) {
-    return astCreateUnaryOperator(child, AST_OP_NOT);
+    return createUnaryOperator(child, AST_OP_NOT);
 }
 
 ASTNode* astCreateOperatorAnd(ASTNode* left, ASTNode* right) {
-    return astCreateBinaryOperator(right, left, AST_OP_AND);
+    return createBinaryOperator(right, left, AST_OP_AND);
 }
 
 ASTNode* astCreateOperatorOr(ASTNode* left, ASTNode* right) {
-    return astCreateBinaryOperator(right, left, AST_OP_OR);
+    return createBinaryOperator(right, left, AST_OP_OR);
 }
 
 ASTNode* astCreateOperatorArrayAccess(ASTNode* array, ASTNode* index) {
-    return astCreateBinaryOperator(array, index, AST_OP_ARRAY_ACCESS);
+    return createBinaryOperator(array, index, AST_OP_ARRAY_ACCESS);
 }
 
 ASTNode* astCreateOperatorCall(ASTNode* function, ASTNode* parameters) {
@@ -229,7 +253,7 @@ ASTNode* astCreateOperatorCall(ASTNode* function, ASTNode* parameters) {
         );
         return NULL;
     }
-    return astCreateBinaryOperator(function, parameters, AST_OP_CALL);
+    return createBinaryOperator(function, parameters, AST_OP_CALL);
 }
 
 ASTNode* astCreateVarDeclaration(char* varName) {
@@ -237,7 +261,7 @@ ASTNode* astCreateVarDeclaration(char* varName) {
 
     if((node = malloc(sizeof(struct s_astNode)))) {
         node->type = AST_VAR_DECLARATION;
-        node->varDeclaration = varName;
+        node->varDeclaration = copyStr(varName);
     }
 
     return node;
@@ -248,7 +272,7 @@ ASTNode* astCreateArrayDeclaration(char* varName, size_t size) {
 
     if((node = malloc(sizeof(struct s_astNode)))) {
         node->type = AST_ARRAY_DECLARATION;
-        node->arrayDeclaration.varName = varName;
+        node->arrayDeclaration.varName = copyStr(varName);
         node->arrayDeclaration.size = size;
     }
 
@@ -260,7 +284,7 @@ ASTNode* astCreateVarAssignment(char* varName, ASTNode* value) {
 
     if ((node = malloc(sizeof(struct s_astNode)))) {
         node->type = AST_VAR_ASSIGN;
-        node->varAssignment.varName = varName;
+        node->varAssignment.varName = copyStr(varName);
         node->varAssignment.value = value;
     }
 
@@ -272,7 +296,7 @@ ASTNode* astCreateArrayAssignment(char* varName, ASTNode* pos, ASTNode* value) {
 
     if ((node = malloc(sizeof(struct s_astNode)))) {
         node->type = AST_ARRAY_ASSIGN;
-        node->arrayAssignment.varName = varName;
+        node->arrayAssignment.varName = copyStr(varName);
         node->arrayAssignment.pos = pos;
         node->arrayAssignment.value = value;
     }
@@ -296,7 +320,7 @@ ASTNode* astCreateBranch(ASTNode* condition,
 }
 
 ASTNode* astCreateLoop(ASTNode* condition, ASTNode* body) {
-    return astCreateBinaryOperator(condition, body, AST_LOOP);
+    return createBinaryOperator(condition, body, AST_LOOP);
 }
 
 ASTNode* astCreateForLoop(ASTNode* init, 
@@ -316,7 +340,7 @@ ASTNode* astCreateForLoop(ASTNode* init,
 }
 
 ASTNode* astCreateInstructionList(ASTNode* current, ASTNode* next) {
-    return astCreateBinaryOperator(current, next, AST_INST_LIST);
+    return createBinaryOperator(current, next, AST_INST_LIST);
 }
 
 ASTNode* astCreatePrintf(char* params) {
@@ -324,7 +348,7 @@ ASTNode* astCreatePrintf(char* params) {
 
     if ((node = malloc(sizeof(struct s_astNode)))) {
         node->type = AST_PRINTF;
-        node->printf = params;
+        node->printf = copyStr(params);
     }
 
     return node;

@@ -186,6 +186,7 @@ instruction_list    : instruction instruction_list
 instruction     : PRINTF SEMICOLON
                     {
                         $$ = astCreatePrintf($1);
+                        free($1);
                     }
                 | declaration_list SEMICOLON
                     {
@@ -314,6 +315,7 @@ declaration : ID
                     symbolShouldntExist($1);
                     stAddVariableSymbol(st, $1, DT_UNKNOWN);
                     $$ = astCreateVarDeclaration($1);
+                    free($1);
                 }
             | ID EQUAL expression
                 {
@@ -323,12 +325,14 @@ declaration : ID
                         astCreateVarDeclaration($1),
                         astCreateVarAssignment($1, $3)
                     );
+                    free($1);
                 }
             | ID LBRACKET STATIC_INT RBRACKET
                 {
                     symbolShouldntExist($1);
                     stAddArraySymbol(st, $1, DT_UNKNOWN, $3);
                     $$ = astCreateArrayDeclaration($1, $3);
+                    free($1);
                 }
             ;
 
@@ -347,14 +351,19 @@ assignation_list    : assignation COMMA assignation_list
                         }
                     ;
 
+/* Conflit Shift/Reduce avec primary_expr mais difficile à régler sans
+ * complexifier énormément la grammaire.
+ */
 assignation : ID EQUAL expression 
                 { 
                     symbolShouldExist($1);
                     $$ = astCreateVarAssignment($1, $3);
+                    free($1);
                 }
             | ID LBRACKET expression RBRACKET EQUAL expression
                 {
-                    $$ = astCreateArrayAssignment($1, $3, $6); 
+                    $$ = astCreateArrayAssignment($1, $3, $6);
+                    free($1);
                 }
             ;
 
@@ -520,6 +529,7 @@ primary_expr    : ID
                     {
                         symbolShouldExist($1);
                         $$ = astCreateVariableRef($1);
+                        free($1);
                     }
                 | static_value
                     {
@@ -547,6 +557,7 @@ static_value    : STATIC_INT
                         $$ = astCreateStaticDouble($1); 
                     }
                 ;
+
 
 %%
 

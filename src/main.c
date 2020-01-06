@@ -37,6 +37,9 @@ int doJob(clParameters* parameters) {
 
     if (!ast) {
         logError("Une erreur est survenue. Arret.\n");
+        
+        fclose(inFile);
+        stFree(st);
         exit(10);
     }
 
@@ -54,6 +57,8 @@ int doJob(clParameters* parameters) {
         astPrint(ast, stdout);
     }
 
+    fclose(inFile);
+    astFree(ast);
     stFree(st);
 
     return 0;
