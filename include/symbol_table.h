@@ -13,6 +13,12 @@
 
 typedef struct s_symbolTable SymbolTable;
 
+typedef enum e_varType {
+    VT_VARIABLE,
+    VT_ARRAY,
+    VT_UNKNOWN
+} VarType;
+
 typedef enum e_dataType {
     DT_INT,
     DT_DOUBLE,
@@ -47,14 +53,28 @@ size_t stLen(SymbolTable* st);
 void stPrint(SymbolTable* st, FILE* out);
 
 /*!
- * Permet d'ajouter un symbole à la table.
- * \param st La touble où ajouter le symbol.
- * \param bame Le nom du symbol à ajouter.
- * \param type Le type du symbol à ajouter.
+ * Permet d'ajouter un symbole de type variable à la table.
+ * \param st La table où ajouter le symbole.
+ * \param name Le nom du symbol à ajouter.
+ * \param data_type Le type du symbol à ajouter.
  * \return 0 si le symbol à était ajouté, 1 si le symbole existe déjà et 
  * 100 si une erreur est survenue.
  */
-int stAddSymbol(SymbolTable* st, char* name, DataType type);
+int stAddVariableSymbol(SymbolTable* st, const char* name, DataType dataType);
+
+/*!
+ * Permet d'ajouter un symbole de type tableau à la table.
+ * \param st La table où ajouter le symbole.
+ * \param name Le nom du symbol à ajouter.
+ * \param data_type Le type du symbol à ajouter.
+ * \param size La taille du tableau.
+ * \return 0 si le symbol à était ajouté, 1 si le symbole existe déjà et 
+ * 100 si une erreur est survenue.
+ */
+int stAddArraySymbol(SymbolTable* st, 
+                     const char* name, 
+                     DataType dataType, 
+                     size_t size);
 
 /*!
  * Permet d'ajouter un valeur statiquede type int à la table des symboles.
@@ -62,7 +82,7 @@ int stAddSymbol(SymbolTable* st, char* name, DataType type);
  * \param value La valeur statique à ajouter.
  * \return Le nom donné à la valeur statique ou NULL si une erreur est survenue.
  */
-const char* stAddStaticInt(SymbolTable* st, int value);
+const char* stAddStaticInt(SymbolTable* st, const int value);
 
 /*!
  * Permet d'ajouter un valeur statiquede type souble à la table des symboles.
@@ -70,7 +90,7 @@ const char* stAddStaticInt(SymbolTable* st, int value);
  * \param value La valeur statique à ajouter.
  * \return Le nom donné à la valeur statique ou NULL si une erreur est survenue.
  */
-const char* stAddStaticDouble(SymbolTable* st, double value);
+const char* stAddStaticDouble(SymbolTable* st, const double value);
 
 /*!
  * Permet de verifier si un symbole est déjà dans la table.
@@ -78,16 +98,32 @@ const char* stAddStaticDouble(SymbolTable* st, double value);
  * \param name Le nom du symbole à chercher.
  * \return Vrai si le symbole est présent, non sinon.
  */
-int stSymbolExist(SymbolTable* st, char* name);
+int stSymbolExist(SymbolTable* st, const char* name);
 
 /*!
- * Permet de récupérer le type d'une variable par son nom.
+ * Permet de récupérer le type de donné d'une variable par son nom.
  * \param st La table où chercher le symbole.
  * \param name Le nom du symbole recherché.
  * \return Le type du symbole recherché ou DT_UNKNOWN si le symbole 
  * n'existe pas.
  */
-DataType stGetType(SymbolTable* st, char* name);
+DataType stGetDataType(SymbolTable* st, const char* name);
+
+/*!
+ * Permet de récupérer le type de variable d'une variable par son nom.
+ * \param st La table où chercher le symbole.
+ * \param name Le nom du symbole recherché.
+ * \return Le type du symbole recherché ou VT_UNKNOWN si le symbole 
+ * n'existe pas.
+ */
+VarType stGetVarType(SymbolTable* st, const char* name);
+
+/*!
+ * Permet de définir le type des symbols ayant comme type de donné DT_UNKNOWN.
+ * \param st La table où chercher les symboles.
+ * \param dtype Le nouveau type des symboles.
+ */
+void stSetUnknownDataTypes(SymbolTable* st, DataType dtype);
 
 /*!
  * Permet de savoir si un symbole est statique.
@@ -95,7 +131,7 @@ DataType stGetType(SymbolTable* st, char* name);
  * \param name Le nom du symbole.
  * \return vrai si le symbole existe et est statique, faux sinon.
  */
-int stIsStatic(SymbolTable* st, char* name);
+int stIsStatic(SymbolTable* st, const char* name);
 
 /*!
  * Permet de récupérer la valeur d'un symbole statique de type int.
@@ -104,7 +140,7 @@ int stIsStatic(SymbolTable* st, char* name);
  * \return La valeur du symbole ou 0 si le symbole n'est pas statique ou 
  * n'existe pas.
  */
-int stGetStaticIntValuePtr(SymbolTable* st, char* name);
+int stGetStaticIntValue(SymbolTable* st, const char* name);
 
 /*!
  * Permet de récupérer la valeur d'un symbole statique de type double.
@@ -113,6 +149,6 @@ int stGetStaticIntValuePtr(SymbolTable* st, char* name);
  * \return La valeur du symbole ou 0 si le symbole n'est pas statique ou 
  * n'existe pas.
  */
-double setGetStaticDoubleValuePtr(SymbolTable* st, char* name);
+double setGetStaticDoubleValue(SymbolTable* st, const char* name);
 
 #endif /* HEADER_SYMBOL_TABLE */

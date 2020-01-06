@@ -3,50 +3,40 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "logging.h"
 #include "cl_parameters.h"
 #include "ast.h"
 #include "symbol_table.h"
 
-extern ASTNode* parse_file(FILE*);
+extern ASTNode* parse_file(FILE*, SymbolTable*);
 
-void doJob(clParameters* parameters);
+int doJob(clParameters* parameters);
 
 int main(int argc, char** argv) {
-    
     clParameters* parameters = clGetParameters(argc, argv);
 
-    printf(
-        "Print AST: %s\n"
-        "Print TOS: %s\n"
-        "In       : %s\n"
-        "Out      : %s\n",
-        parameters->printAst ? "true" : "false",
-        parameters->printTos ? "true" : "false",
-        parameters->inFile,
-        parameters->outFile
-    );
-
-    doJob(parameters);
+    int result = doJob(parameters);
 
     clFree(parameters);
 
-    return 0;
+    return result;
 }
 
-void doJob(clParameters* parameters) {
+int doJob(clParameters* parameters) {
 
     FILE* inFile = fopen(parameters->inFile, "r");
     if (!inFile) {
-        fprintf(stderr, "Unable to open file %s\n", parameters->inFile);
+        logError("Unable to open file %s\n", parameters->inFile);
         exit(1);
     }
 
     SymbolTable* st = stCreate();
+    ASTNode* ast;
 
-    ASTNode* ast = parse_file(inFile);
+    ast = parse_file(inFile, st);
 
     if (!ast) {
-        puts("Une erreur est survenue. Arret.");
+        logError("Une erreur est survenue. Arret.\n");
         exit(10);
     }
 
@@ -54,11 +44,17 @@ void doJob(clParameters* parameters) {
         stPrint(st, stdout);
     }
 
-    /* TODO: print AST if parameter */
+    if (parameters->printAst) {
+        astPrint(ast, stdout);
+    }
 
     /* TODO: replace paterns with functions calls */
 
-    /* TODO: print AST if parameter */
+    if (parameters->printAst) {
+        astPrint(ast, stdout);
+    }
 
     stFree(st);
+
+    return 0;
 }

@@ -6,6 +6,9 @@
 #ifndef HEADER_AST
 #define HEADER_AST
 
+#include <stddef.h>
+#include <stdio.h>
+
 /*!
  * \enum astNodeType
  * Enum définissant les types de nœuds d'AST existants.
@@ -21,16 +24,34 @@ typedef enum e_astNodeType {
     AST_OP_SUBSTRACT,
     AST_OP_MULTIPLY,
     AST_OP_DIVIDE,
-    AST_OP_INCREMENT,
-    AST_OP_DECREMENT,
+    AST_OP_PREF_INCREMENT,
+    AST_OP_PREF_DECREMENT,
+    AST_OP_POST_INCREMENT,
+    AST_OP_POST_DECREMENT,
+
+    AST_OP_LO,
+    AST_OP_LE,
+    AST_OP_GT,
+    AST_OP_GE,
     AST_OP_EQ,
     AST_OP_NEQ,
+    AST_OP_NOT,
+    AST_OP_AND,
+    AST_OP_OR,
 
-    AST_ASSIGN,
+    AST_OP_ARRAY_ACCESS,
+    AST_OP_CALL,
+
+    AST_VAR_DECLARATION,
+    AST_ARRAY_DECLARATION,
+    AST_VAR_ASSIGN,
+    AST_ARRAY_ASSIGN,
 
     AST_BRANCH,
     AST_LOOP,
-    AST_INST_LIST
+    AST_INST_LIST,
+
+    AST_PRINTF,
 } astNodeType;
 
 struct s_astNode;
@@ -49,12 +70,42 @@ typedef struct s_astBinaryOperator {
 } astBinaryOperator;
 
 /*!
- * Type représentant un assignation.
+ * Type représentant un assignation de variable.
  */
-typedef struct s_astAssignment {
+typedef struct s_astVarAssignment {
     char* varName;              /*!< Le nom de la variable qui prend la valeur */
     struct s_astNode* value;    /*!< Le nœud qui permet de déterminer la valeur de la variable */
-} astAssignment;
+} astVarAssignment;
+
+typedef struct s_astArrayAssignment {
+    char* varName;              /*!< Le nom du tableau qui prend la valeur */
+    struct s_astNode* pos;      /*!< La position dans la tableau */
+    struct s_astNode* value;    /*!< Le nœud qui permet de déterminer la valeur de la variable */
+} astArrayAssignment;
+
+/*!
+ * Type représentant une déclaration de tableau.
+ */
+typedef struct s_astArrayDeclaration {
+    char* varName;  /*!< Le nom du tableau */
+    size_t size;    /*!< La taille du tableau */
+} astArrayDeclaration;
+
+/*!
+ * Type représentant l'accès à un tableau.
+ */
+typedef struct s_astOpArrayAccess {
+    struct s_astNode* array;    /*!< Le tableau au quel on accède */
+    struct s_astNode* index;    /*!< L'index de la cellule à accéder */
+} astOpArrayAccess;
+
+/*!
+ * Type représentant un appel de fonction.
+ */
+typedef struct s_astOpCall {
+    struct s_astNode* function;     /*!< La fonction à appeler */
+    struct s_astNode* parameters;   /*!< Les paramètres de la fonction (doit être du type AST_INST_LIST) */
+} astOpCall;
 
 /*!
  * Type représentant un embranchement dans l'AST.
@@ -126,13 +177,37 @@ typedef struct s_astNode {
          */
         astUnaryOperator opMinus;
         /*! 
-         * Champ définissant la valeur pour un nœud de type AST_OP_INCREMENT.
+         * Champ définissant la valeur pour un nœud de type AST_OP_PREF_INCREMENT.
          */
-        astUnaryOperator opIncrement;
+        astUnaryOperator opPrefIncrement;
         /*! 
-         * Champ définissant la valeur pour un nœud de type AST_OP_DECREMENT.
+         * Champ définissant la valeur pour un nœud de type AST_OP_PREF_DECREMENT.
          */
-        astUnaryOperator opDecrement;
+        astUnaryOperator opPrefDecrement;
+        /*! 
+         * Champ définissant la valeur pour un nœud de type AST_OP_POST_INCREMENT.
+         */
+        astUnaryOperator opPostIncrement;
+        /*! 
+         * Champ définissant la valeur pour un nœud de type AST_OP_POST_DECREMENT.
+         */
+        astUnaryOperator opPostDecrement;
+        /*! 
+         * Champ définissant la valeur pour un nœud de type AST_OP_LO.
+         */
+        astBinaryOperator opLower;
+        /*! 
+         * Champ définissant la valeur pour un nœud de type AST_OP_LE.
+         */
+        astBinaryOperator opLowerEq;
+        /*! 
+         * Champ définissant la valeur pour un nœud de type .AST_OP_GT
+         */
+        astBinaryOperator opGreater;
+        /*! 
+         * Champ définissant la valeur pour un nœud de type AST_OP_GE.
+         */
+        astBinaryOperator opGreaterEq;
         /*!
          * Champ définissant la valeur pour un noeud de type AST_OP_EQ.
          */
@@ -142,9 +217,41 @@ typedef struct s_astNode {
          */
         astBinaryOperator opNotEqual;
         /*!
+         * Champ définissant la valeur pour un noeud de type AST_OP_NOT.
+         */
+        astUnaryOperator opNot;
+        /*!
+         * Champ définissant la valeur pour un noeud de type AST_OP_AND.
+         */
+        astBinaryOperator opAnd;
+        /*!
+         * Champ définissant la valeur pour un noeud de type AST_OP_OR.
+         */
+        astBinaryOperator opOr;
+        /*!
+         * Champ définissant la valeur pour un noeud de type AST_OP_ARRAY_ACCESS.
+         */
+        astOpArrayAccess opArrayAccess;
+        /*!
+         * Champ définissant la valeur pour un noeud de type AST_OP_CALL.
+         */
+        astOpCall opCall;
+        /*!
+         * Champ représentant la valeur d'une assignation de type AST_VAR_DECLARATION.
+         */
+        char* varDeclaration;
+        /*!
+         * Champ représentant la valeur d'une assignation de type AST_ARRAY_DECLARATION.
+         */
+        astArrayDeclaration arrayDeclaration;
+        /*!
          * Champ représentant la valeur d'une assignation de type AST_ASSIGN.
          */
-        astAssignment assignment;
+        astVarAssignment varAssignment;
+        /*!
+         * Champ représentant la valeur d'une assignation de type AST_ASSIGN.
+         */
+        astArrayAssignment arrayAssignment;
         /*! 
          * Champ définissant la valeur pour un nœud de type AST_BRANCH.
          */
@@ -157,6 +264,10 @@ typedef struct s_astNode {
          * Champ définissant la valeur pour un nœud de type AST_INST_LIST.
          */
         astInstructionList instructionList;
+        /*!
+         * Champ définissant la valeur pour un nœud de type AST_PRINTF.
+         */
+        char* printf;
     };
 
 } ASTNode;
@@ -166,6 +277,13 @@ typedef struct s_astNode {
  * \param ast L'AST à libérer.
  */
 void astFree(ASTNode* ast);
+
+/*!
+ * Permet d'afficher un ast.
+ * \param ast L'AST à afficher.
+ * \param out Le fichier de sortie.
+ */
+void astPrint(ASTNode* ast, FILE* out);
 
 /*!
  * Permet de créer une feuille de type Double statique.
@@ -190,63 +308,109 @@ ASTNode* astCreateVariableRef(char* varName);
 
 /*!
  * Permet de créer un nœud de type operateur plus unaire.
- * \param right Le nœud fils de l'operateur.
+ * \param child Le nœud fils de l'operateur.
  * \return Le nœud créé.
  */
-ASTNode* astCreateOperatorPlus(ASTNode* right);
+ASTNode* astCreateOperatorPlus(ASTNode* child);
 
 /*!
  * Permet de créer un nœud de type operateur moins unaire.
- * \param right Le nœud fils de l'operateur.
+ * \param child Le nœud fils de l'operateur.
  * \return Le nœud créé.
  */
-ASTNode* astCreateOperatorMinus(ASTNode* right);
+ASTNode* astCreateOperatorMinus(ASTNode* child);
 
 /*!
  * Permet de créer un nœud de type operateur d'addition.
- * \param right Le nœud fils à droite de l'operateur.
  * \param left Le nœud fils à gauche de l'operateur.
+ * \param right Le nœud fils à droite de l'operateur.
  * \return Le nœud créé.
  */
-ASTNode* astCreateOperatorAdd(ASTNode* right, ASTNode* left);
+ASTNode* astCreateOperatorAdd(ASTNode* left, ASTNode* right);
 
 /*!
  * Permet de créer un nœud de type operateur de soustraction.
- * \param right Le nœud fils à droite de l'operateur.
  * \param left Le nœud fils à gauche de l'operateur.
+ * \param right Le nœud fils à droite de l'operateur.
  * \return Le nœud créé.
  */
-ASTNode* astCreateOperatorSubstract(ASTNode* right, ASTNode* left);
+ASTNode* astCreateOperatorSubstract(ASTNode* left, ASTNode* right);
 
 /*!
  * Permet de créer un nœud de type operateur de multiplication.
- * \param right Le nœud fils à droite de l'operateur.
  * \param left Le nœud fils à gauche de l'operateur.
+ * \param right Le nœud fils à droite de l'operateur.
  * \return Le nœud créé.
  */
-ASTNode* astCreateOperatorMultiply(ASTNode* right, ASTNode* left);
+ASTNode* astCreateOperatorMultiply(ASTNode* left, ASTNode* right);
 
 /*!
  * Permet de créer un nœud de type operateur de division.
- * \param right Le nœud fils à droite de l'operateur (diviseur).
- * \param left Le nœud fils à gauche de l'operateur (dividende).
+ * \param left Le nœud fils à gauche de l'operateur (diviseur).
+ * \param right Le nœud fils à droite de l'operateur (dividende).
  * \return Le nœud créé.
  */
-ASTNode* astCreateOperatorDivide(ASTNode* right, ASTNode* left);
+ASTNode* astCreateOperatorDivide(ASTNode* left, ASTNode* right);
 
 /*!
  * Permet de créer un nœud de type operateur d'incrément.
- * \param right Le nœud fils de l'operateur.
+ * \param child Le nœud fils de l'operateur.
  * \return Le nœud créé.
  */
-ASTNode* astCreateOperatorIncrement(ASTNode* right);
+ASTNode* astCreateOperatorPrefIncrement(ASTNode* child);
 
 /*!
  * Permet de créer un nœud de type operateur de décrément.
- * \param right Le nœud fils de l'operateur.
+ * \param child Le nœud fils de l'operateur.
  * \return Le nœud créé.
  */
-ASTNode* astCreateOperatorDecrement(ASTNode* right);
+ASTNode* astCreateOperatorPrefDecrement(ASTNode* child);
+
+/*!
+ * Permet de créer un nœud de type operateur d'incrément.
+ * \param child Le nœud fils de l'operateur.
+ * \return Le nœud créé.
+ */
+ASTNode* astCreateOperatorPostIncrement(ASTNode* child);
+
+/*!
+ * Permet de créer un nœud de type operateur de décrément.
+ * \param child Le nœud fils de l'operateur.
+ * \return Le nœud créé.
+ */
+ASTNode* astCreateOperatorPostDecrement(ASTNode* child);
+
+/*!
+ * Permet de créer un nœud de type operateur de comparaison inférieur à.
+ * \param left Le nœud fils de gauche de l'opérateur.
+ * \param right Le nœud fils de droite de l'opérateur.
+ * \return Le nœud créé.
+ */
+ASTNode* astCreateOperatorLower(ASTNode* left, ASTNode* right);
+
+/*!
+ * Permet de créer un nœud de type operateur de comparaison infèrieur ou égal à.
+ * \param left Le nœud fils de gauche de l'opérateur.
+ * \param right Le nœud fils de droite de l'opérateur.
+ * \return Le nœud créé.
+ */
+ASTNode* astCreateOperatorLowerEqual(ASTNode* left, ASTNode* right);
+
+/*!
+ * Permet de créer un nœud de type operateur de comparaison supérieur à.
+ * \param left Le nœud fils de gauche de l'opérateur.
+ * \param right Le nœud fils de droite de l'opérateur.
+ * \return Le nœud créé.
+ */
+ASTNode* astCreateOperatorGreater(ASTNode* left, ASTNode* right);
+
+/*!
+ * Permet de créer un nœud de type operateur de comparaison supérieur ou égal à.
+ * \param left Le nœud fils de gauche de l'opérateur.
+ * \param right Le nœud fils de droite de l'opérateur.
+ * \return Le nœud créé.
+ */
+ASTNode* astCreateOperatorGreaterEqual(ASTNode* left, ASTNode* right);
 
 /*!
  * Permet de créer un nœud de type operateur d'égalité.
@@ -254,7 +418,7 @@ ASTNode* astCreateOperatorDecrement(ASTNode* right);
  * \param right Le nœud fils de droite de l'opérateur.
  * \return Le nœud créé.
  */
-ASTNode* astCreateOperatorEqual(ASTNode* right, ASTNode* left);
+ASTNode* astCreateOperatorEqual(ASTNode* left, ASTNode* right);
 
 /*!
  * Permet de créer un nœud de type operateur d'inégalité.
@@ -262,15 +426,78 @@ ASTNode* astCreateOperatorEqual(ASTNode* right, ASTNode* left);
  * \param right Le nœud fils de droite de l'opérateur.
  * \return Le nœud créé.
  */
-ASTNode* astCreateOperatorNotEqual(ASTNode* right, ASTNode* left);
+ASTNode* astCreateOperatorNotEqual(ASTNode* left, ASTNode* right);
 
 /*!
- * Permet de créer un nœud de type assignation.
+ * Permet de créer un nœud de type operateur non.
+ * \param child Le nœud fils de l'opérateur.
+ * \return Le nœud créé.
+ */
+ASTNode* astCreateOperatorNot(ASTNode* child);
+
+/*!
+ * Permet de créer un nœud de type operateur et.
+ * \param left Le nœud fils de gauche de l'opérateur.
+ * \param right Le nœud fils de droite de l'opérateur.
+ * \return Le nœud créé.
+ */
+ASTNode* astCreateOperatorAnd(ASTNode* left, ASTNode* right);
+
+/*!
+ * Permet de créer un nœud de type operateur ou.
+ * \param left Le nœud fils de gauche de l'opérateur.
+ * \param right Le nœud fils de droite de l'opérateur.
+ * \return Le nœud créé.
+ */
+ASTNode* astCreateOperatorOr(ASTNode* left, ASTNode* right);
+
+/*!
+ * Permet de créer un nœud de type operateur d'accès à un tableau.
+ * \param array Le nœud du tableau.
+ * \param index Le nœud de l'index.
+ * \return Le nœud créé.
+ */
+ASTNode* astCreateOperatorArrayAccess(ASTNode* array, ASTNode* index);
+
+/*!
+ * Permet de créer un nœud de type operateur d'appel de fonction.
+ * \param function Le nœud de la fonction.
+ * \param parameters Le nœud des paramètres. Doit être du type AST_INST_LIST
+ * \return Le nœud créé.
+ */
+ASTNode* astCreateOperatorCall(ASTNode* function, ASTNode* parameters);
+
+/*!
+ * Permet de créer un nœud de déclaration de variable.
+ * \param varName Le nom de la variable déclarée.
+ * \return Le nœud créé.
+ */
+ASTNode* astCreateVarDeclaration(char* varName);
+
+/*!
+ * Permet de créer un nœud de déclaration de tableau.
+ * \param varName Le nom du tableau déclarée.
+ * \param size La taille du tableau déclaré.
+ * \return Le nœud créé.
+ */
+ASTNode* astCreateArrayDeclaration(char* varName, size_t size);
+
+/*!
+ * Permet de créer un nœud de type assignation de variable.
  * \param varName Le nom de la variable qui doit prendre la valeur.
  * \param value Le nœud fils qui détermine la valeur de la variable;
  * \return Le nœud créé.
  */
-ASTNode* astCreateAssignment(char* varName, ASTNode* value);
+ASTNode* astCreateVarAssignment(char* varName, ASTNode* value);
+
+/*!
+ * Permet de créer un nœud de type assignation de tableau.
+ * \param varName Le nom du tableau qui doit prendre la valeur.
+ * \param pos La position dans le tableau.
+ * \param value Le nœud fils qui détermine la valeur de la variable;
+ * \return Le nœud créé.
+ */
+ASTNode* astCreateArrayAssignment(char* varName, ASTNode* pos, ASTNode* value);
 
 /*!
  * Permet de créer un nœud de type branche (_if_, _if_/_else_).
@@ -292,6 +519,19 @@ ASTNode* astCreateBranch(ASTNode* condition,
  * \return Le nœud créé.
  */
 ASTNode* astCreateLoop(ASTNode* condition, ASTNode* body);
+
+/*!
+ * Permet de créer les nœuds pour représenter une boucle for.
+ * \param init Le nœud représentant l'initialisation de la boucle.
+ * \param condition Le nœud de condition de la boucle.
+ * \param update Le nœud de mise à jour à chaque itération.
+ * \param body Le corps de la boucle.
+ * \return Les nœuds créés.
+ */
+ASTNode* astCreateForLoop(ASTNode* init, 
+                          ASTNode* condition,
+                          ASTNode* update,
+                          ASTNode* body);
 
 /*!
  * Permet de créer un nœud de type liste d'instruction.
@@ -323,5 +563,13 @@ ASTNode* astCreateLoop(ASTNode* condition, ASTNode* body);
  * \return Le nœud créé.
  */
 ASTNode* astCreateInstructionList(ASTNode* current, ASTNode* next);
+
+/*!
+ * Permet de créer un nœud de type printf. Il permet de réserver à printf un
+ * traitement particulier.
+ * \param params Les paramètres de printf.
+ * \return Le nœud créé.
+ */
+ASTNode* astCreatePrintf(char* params);
 
 #endif /* HEADER_AST */

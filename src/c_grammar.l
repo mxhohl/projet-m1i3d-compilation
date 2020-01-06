@@ -2,8 +2,11 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdarg.h>
 
 #include "c_grammar.tab.h"
+
+void lexError(const char*, ...);
 
 %}
 
@@ -53,7 +56,14 @@ double          { return TYPE_DOUBLE; }
 {DOUBLE}        { yylval.floating = atof(yytext);
                   return STATIC_DOUBLE; }
 
-{IDENTIFICATOR} { yylval.str = strdup(yytext);
+{IDENTIFICATOR} { yylval.str = malloc(sizeof(char) * strlen(yytext) +1);
+                  if (!yylval.str) {
+                      lexError(
+                          "Impossible d'allouer la mémoire pour l'ID '%s'",
+                          yytext
+                      );
+                  }
+                  strcpy(yylval.str, yytext);
                   return ID; }
 
 "+"             { return OP_PLUS; }
@@ -84,13 +94,18 @@ double          { return TYPE_DOUBLE; }
 "]"             { return RBRACKET; }
 
 [ \t\n]         { /* on saute les espaces */ }
-.	            { fflush(stdout);
-                  fprintf(stderr, 
-                          "\033[1;33mCaractère '%c' inconnu "
-                          "à la ligne %d\033[0m\n",
-                          *yytext,
-                          yylineno
-                  ); }
+.	            { lexError("Caractère '%s' inconnu", yytext); }
 
 %%
 
+void lexError(const char* error, ...) {
+    va_list arg;
+    char fullError[255];
+
+    va_start(arg, error);
+    vsprintf(fullError, error, arg);
+    va_end(arg);
+
+    fflush(stdout);
+    logWarning("(LEX) Ligne %d: %s\n", yylineno, fullError);
+}

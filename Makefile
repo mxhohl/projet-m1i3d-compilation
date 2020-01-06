@@ -74,7 +74,7 @@ $(SRC_GENDIR)/yacc/%.tab.o: $(SRC_GENDIR)/yacc/%.tab.c $(SRC_GENDIR)/lex/%.yy.c
 $(SRC_GENDIR)/yacc/%.tab.c: $(SRC_DIR)/%.y
 	$(DIR_GUARD)
 	@echo "	YACC	$< -> $@"
-	@$(YACC) --defines=${@:.c=.h} --output=$@ $<
+	@$(YACC) --defines=${@:.c=.h} --output=$@ -v $<
 
 $(EXE): $(SRC_OBJS)
 	$(DIR_GUARD)

@@ -15,7 +15,11 @@ typedef struct s_symbol {
     struct s_symbol* prev;
 
     char* name;
-    DataType type;
+    DataType data_type;
+    VarType var_type;
+
+    size_t array_size;
+
     union u_staticValue {
         int i;
         double d;
@@ -35,7 +39,7 @@ struct s_symbolTable {
 /*               FONCTIONS OUTILS                 */
 /**************************************************/
 
-static void getTypeName(DataType type, char* name) {
+static void getDataTypeName(DataType type, char* name) {
     switch (type) {
     case DT_INT:
         strcpy(name, "int");
@@ -49,7 +53,21 @@ static void getTypeName(DataType type, char* name) {
     }
 }
 
-static Symbol* getSymbol(SymbolTable* st, char* name) {
+static void getVarTypeName(VarType type, char* name) {
+    switch (type) {
+    case VT_VARIABLE:
+        strcpy(name, "variable");
+        break;
+    case VT_ARRAY:
+        strcpy(name, "tableau");
+        break;
+    default:
+        strcpy(name, "unknown");
+        break;
+    }
+}
+
+static Symbol* getSymbol(SymbolTable* st, const char* name) {
     Symbol* current;
     for (current = st->first; current; current = current->next) {
         if (strcmp(name, current->name) == 0) {
@@ -59,14 +77,16 @@ static Symbol* getSymbol(SymbolTable* st, char* name) {
     return NULL;
 }
 
-static Symbol* addNewSymbol(SymbolTable* st, char* name, DataType type) {
+static Symbol* addNewSymbol(SymbolTable* st, char* name, DataType dataType, VarType varType) {
     Symbol* newSymbol;
     if (!(newSymbol = malloc(sizeof(struct s_symbol)))) {
         return NULL;
     }
 
     newSymbol->name = name;
-    newSymbol->type = type;
+    newSymbol->data_type = dataType;
+    newSymbol->var_type = varType;
+    newSymbol->array_size = 0;
     newSymbol->static_value = NULL;
 
     newSymbol->next = NULL;
@@ -97,7 +117,9 @@ static size_t getNbLength(size_t nb) {
     return floor(log10(nb)) +1;
 }
 
-static Symbol* addStaticSymbol(SymbolTable* st, DataType type, char* name) {
+static Symbol* addStaticSymbol(SymbolTable* st, 
+                               DataType dataType, 
+                               char* name) {
     size_t nbDigit = getNbLength(st->count_static);
 
     if (!(name = malloc(sizeof(char) * (8 + nbDigit)))) {
@@ -110,7 +132,7 @@ static Symbol* addStaticSymbol(SymbolTable* st, DataType type, char* name) {
     sprintf(name, "static_%lu", st->count_static);
 
     Symbol* newSymbol;
-    if (!(newSymbol = addNewSymbol(st, name, type))) {
+    if (!(newSymbol = addNewSymbol(st, name, dataType, VT_VARIABLE))) {
         return NULL;
     }
 
@@ -127,7 +149,7 @@ static void getValueStr(Symbol* s, char* strValue) {
         return;
     }
 
-    switch (s->type) {
+    switch (s->data_type) {
     case DT_INT:
         sprintf(strValue, "%d", s->static_value->i);
         break;
@@ -138,6 +160,14 @@ static void getValueStr(Symbol* s, char* strValue) {
         strcpy(strValue, "unknown");
         break;
     }
+}
+
+static void getSizeStr(Symbol* s, char* strValue) {
+    if (s->var_type != VT_ARRAY) {
+        strcpy(strValue, "N/A");
+        return;
+    }
+    sprintf(strValue, "%lu", s->array_size);
 }
 
 
@@ -151,7 +181,8 @@ SymbolTable* stCreate() {
     if ((st = malloc(sizeof(struct s_symbolTable)))) {
         st->count = 0;
         st->count_static = 0;
-        st->first = st->last = NULL;
+        st->first = NULL;
+        st->last = NULL;
     }
 
     return st;
@@ -178,28 +209,34 @@ size_t stLen(SymbolTable* st) {
 }
 
 void stPrint(SymbolTable* st, FILE* out) {
-    char typeNameBuffer[8];
+    char dataTypeNameBuffer[8];
+    char varTypeNameBuffer[16];
     char valueBuffer[64];
+    char sizeBuffer[32];
     Symbol* current;
 
-    fprintf(out, "La table contient %lu entrés:\n", st->count);
-    fprintf(out, "%-15s  %-7s  %-6s  %-10s\n", 
-            "NAME", "TYPE", "STATIC", "VALUE"
+    fprintf(out, "La table des symboles contient %lu entrés:\n", st->count);
+    fprintf(out, "%-15s  %-7s  %-8s  %-6s  %-6s  %-10s\n", 
+            "NAME", "DTYPE", "VTYPE", "TAILLE", "STATIC", "VALUE"
     );
     for (current = st->first; current; current = current->next) {
-        getTypeName(current->type, typeNameBuffer);
+        getDataTypeName(current->data_type, dataTypeNameBuffer);
+        getVarTypeName(current->var_type, varTypeNameBuffer);
         getValueStr(current, valueBuffer);
+        getSizeStr(current, sizeBuffer);
 
-        fprintf(out, "%-15.15s  %-7s  %-6s  %-10s\n", 
+        fprintf(out, "%-15.15s  %-7s  %-8s  %-6s  %-6s  %-10s\n", 
             current->name,
-            typeNameBuffer,
+            dataTypeNameBuffer,
+            varTypeNameBuffer,
+            sizeBuffer,
             current->static_value ? "OUI" : "NON",
             valueBuffer
         );
     }
 }
 
-int stAddSymbol(SymbolTable* st, char* name, DataType type) {
+int stAddVariableSymbol(SymbolTable* st, const char* name, DataType dataType) {
     if (getSymbol(st, name)) {
         return 1;
     }
@@ -207,14 +244,35 @@ int stAddSymbol(SymbolTable* st, char* name, DataType type) {
     char* nameBuff = malloc(sizeof(char) * (strlen(name) +1));
     strcpy(nameBuff, name);
 
-    if (!addNewSymbol(st, nameBuff, type)) {
+    if (!addNewSymbol(st, nameBuff, dataType, VT_VARIABLE)) {
         return 100;
     }
 
     return 0;
 }
 
-const char* stAddStaticInt(SymbolTable* st, int value) {
+int stAddArraySymbol(SymbolTable* st, 
+                     const char* name, 
+                     DataType dataType, 
+                     size_t size) {
+    if (getSymbol(st, name)) {
+        return 1;
+    }
+
+    char* nameBuff = malloc(sizeof(char) * (strlen(name) +1));
+    strcpy(nameBuff, name);
+
+    Symbol* newSymbol;
+    if (!(newSymbol = addNewSymbol(st, nameBuff, dataType, VT_ARRAY))) {
+        return 100;
+    }
+
+    newSymbol->array_size = size;
+
+    return 0;
+}
+
+const char* stAddStaticInt(SymbolTable* st, const int value) {
     char* nameBuff = NULL;
 
     Symbol* newSymbol;
@@ -227,7 +285,7 @@ const char* stAddStaticInt(SymbolTable* st, int value) {
     return nameBuff;
 }
 
-const char* stAddStaticDouble(SymbolTable* st, double value) {
+const char* stAddStaticDouble(SymbolTable* st, const double value) {
     char* nameBuff = NULL;
 
     Symbol* newSymbol;
@@ -240,25 +298,43 @@ const char* stAddStaticDouble(SymbolTable* st, double value) {
     return nameBuff;
 }
 
-int stSymbolExist(SymbolTable* st, char* name) {
+int stSymbolExist(SymbolTable* st, const char* name) {
     return getSymbol(st, name) != NULL;
 }
 
-DataType stGetType(SymbolTable* st, char* name) {
+DataType stGetDataType(SymbolTable* st, const char* name) {
     Symbol* symbol;
     if ((symbol = getSymbol(st, name))) {
-        return symbol->type;
+        return symbol->data_type;
     }
     
     return DT_UNKNOWN;
 }
 
-int stIsStatic(SymbolTable* st, char* name) {
+VarType stGetVarType(SymbolTable* st, const char* name) {
+    Symbol* symbol;
+    if ((symbol = getSymbol(st, name))) {
+        return symbol->var_type;
+    }
+    
+    return VT_UNKNOWN;
+}
+
+void stSetUnknownDataTypes(SymbolTable* st, DataType dtype) {
+    Symbol* current;
+    for (current = st->first; current; current = current->next) {
+        if (current->data_type == DT_UNKNOWN) {
+            current->data_type = dtype;
+        }
+    }
+}
+
+int stIsStatic(SymbolTable* st, const char* name) {
     Symbol* symbol = getSymbol(st, name);
     return symbol && symbol->static_value;
 }
 
-int stGetStaticIntValuePtr(SymbolTable* st, char* name) {
+int stGetStaticIntValue(SymbolTable* st, const char* name) {
     Symbol* symbol = getSymbol(st, name);
     if (!symbol || !symbol->static_value) {
         return 0;
@@ -266,7 +342,7 @@ int stGetStaticIntValuePtr(SymbolTable* st, char* name) {
     return symbol->static_value->i;
 }
 
-double setGetStaticDoubleValuePtr(SymbolTable* st, char* name) {
+double setGetStaticDoubleValue(SymbolTable* st, const char* name) {
     Symbol* symbol = getSymbol(st, name);
     if (!symbol || !symbol->static_value) {
         return 0.;
