@@ -16,6 +16,8 @@ void blasFree(BLAS* blas) {
 }
 
 ASTNode** getBlasInAst(BLAS* blas, ASTNode* ast) {
-    fputs(stderr, "Function 'getBlasInAst' is not implemented yet");
+    (void)blas;
+    (void)ast;
+    fputs("Function 'getBlasInAst' is not implemented yet", stderr);
     exit(1);
 }
