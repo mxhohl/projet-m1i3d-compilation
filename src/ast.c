@@ -47,6 +47,56 @@ static char* copyStr(char* str) {
     return newStr;
 }
 
+static void printAst(ASTNode* root, FILE* out, size_t depth, size_t state) {
+    size_t i;
+
+    for (i = 0; i < depth; ++i) {
+        if (depth > 0 && state & (1 << i)) {
+            fprintf(out, "│  ");
+        } else {
+            fprintf(out, "   ");
+        }
+    }
+
+    if (state & (1 << depth)) {
+        fprintf(out, "├");
+    } else {
+        fprintf(out, "└");
+    }
+
+    if (!root) {
+        fprintf(out, "○\n");
+        return;
+    }
+
+    switch (root->type) {
+    case AST_STATIC_DOUBLE:
+        fprintf(out, "[Static Double: %f\n", root->staticDouble);
+        break;
+    case AST_STATIC_INT:
+        fprintf(out, "[Static Int: %d\n", root->staticInt);
+        break;
+    case AST_VARIABLE_REF:
+        fprintf(out, "[Variable Reference: %s\n", root->variableRef);
+        break;
+    case AST_INST_LIST:
+        fprintf(out, "[Instruction List\n");
+        printAst(
+            root->instructionList.current, out, 
+            depth +1, state | (1 << (depth +1))
+        );
+        printAst(
+            root->instructionList.next, out, 
+            depth +1, state
+        );
+        break;
+    
+    default:
+        fprintf(out, "[NOT IMPLEMENTED NODE\n");
+        break;
+    }
+}
+
 
 /**************************************************/
 /**********        Implantations         **********/
@@ -128,7 +178,7 @@ void astFree(ASTNode* ast) {
 }
 
 void astPrint(ASTNode* ast, FILE* out) {
-    fprintf(out, "ICI, UN AST (si si, je vous jure)\n");
+    printAst(ast, out, 0, 0);
 }
 
 ASTNode* astCreateStaticDouble(double value) {
