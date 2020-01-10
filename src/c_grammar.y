@@ -34,6 +34,10 @@ ASTNode* generatedAST = NULL;
     int integer;
     double floating;
     char* str;
+    struct {
+        char* name;
+        int val;
+    }define;
     struct s_astNode* ast;
 }
 
@@ -72,6 +76,7 @@ ASTNode* generatedAST = NULL;
 %token              WHILE
 %token              FOR
 
+%token <define>     PREPRODEFINE
 %token <str>        PRINTF
 
 %token              SEMICOLON
@@ -83,6 +88,7 @@ ASTNode* generatedAST = NULL;
 %token              RBRACE
 %token              LBRACKET
 %token              RBRACKET
+%token              NUMBER_SIGN
 
 
 %type <ast>         file
@@ -148,22 +154,31 @@ axiom   : file
 /*****             FILE             *****/
 /****************************************/
 
-file    : main EOFILE
+file    : preprocessor main EOFILE
             {
-                $$ = $1;
+                $$ = $2;
             }
+        ;
 
 main    : MAIN LBRACE instruction_list RBRACE
             {
                 $$ = $3;
             }
+        ;
 
+/****************************************/
+/*****         PREPROCESSOR         *****/
+/****************************************/
+
+preprocessor    : 
+                | PREPRODEFINE preprocessor
+                ;
 
 /****************************************/
 /*****         INSTRUCTIONS         *****/
 /****************************************/
 
-instruction_block   : instruction
+instruction_block   : instruction 
                         {
                             $$ = $1;
                         }

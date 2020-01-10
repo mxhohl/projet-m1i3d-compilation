@@ -29,11 +29,30 @@ MAIN            "int main()"
 QUOTED_STR      \"(\\.|[^\\"])*\"
 PRINT           "printf("{QUOTED_STR}[^)]*")"
 
+PREPRODEFINE    "#define"[ ]{IDENTIFICATOR}[ ]{INTEGER}[\n]
+
 %%
 
 <<EOF>>         { return EOFILE; }
 
 {COMMENT}       { /* On ignore les commentaires */ }
+
+{PREPRODEFINE}  { int val;
+                  size_t len = yyleng -7;
+                  char* id = malloc(sizeof(char) * len);
+                  if (!id) {
+                      logError(
+                          "Impossible d'allouer la mémoire pour l'"
+                          "id '%s' du define ligne %d.\n",
+                          yytext,
+                          yylineno
+                      );
+                  }
+                  sscanf(yytext, "#define %s %d", id, &val);
+                  yylval.define.name = id;
+                  yylval.define.val = val;
+                  return PREPRODEFINE;
+                }
 
 "if"            { return IF; }
 "else"          { return ELSE; }
@@ -100,6 +119,7 @@ double          { return TYPE_DOUBLE; }
 "}"             { return RBRACE; }
 "["             { return LBRACKET; }
 "]"             { return RBRACKET; }
+"#"             { return NUMBER_SIGN; }
 
 [ \t\n]         { /* on saute les espaces */ }
 .	            { lexError("Caractère '%s' inconnu", yytext); }
