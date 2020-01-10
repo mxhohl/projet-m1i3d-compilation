@@ -79,7 +79,7 @@ $(SRC_GENDIR)/yacc/%.tab.c: $(SRC_DIR)/%.y
 $(EXE): $(SRC_OBJS)
 	$(DIR_GUARD)
 	@echo "	LD	$@"
-	@$(CC) $(LDFLAGS) $^ -o $@
+	@$(CC) $^ -o $@ $(LDFLAGS)
 
 clean:
 	@echo "	RM	$(BUILDDIR)/*"
