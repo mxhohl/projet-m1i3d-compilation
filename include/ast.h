@@ -52,6 +52,7 @@ typedef enum e_astNodeType {
     AST_INST_LIST,
 
     AST_PRINTF,
+    AST_RETURN,
 } astNodeType;
 
 struct s_astNode;
@@ -268,6 +269,10 @@ typedef struct s_astNode {
          * Champ définissant la valeur pour un nœud de type AST_PRINTF.
          */
         char* printf;
+        /*!
+         * Champ définissant la valeur pour un nœud de type AST_RETURN.
+         */
+        astUnaryOperator instructionReturn;
     };
 
 } ASTNode;
@@ -571,5 +576,13 @@ ASTNode* astCreateInstructionList(ASTNode* current, ASTNode* next);
  * \return Le nœud créé.
  */
 ASTNode* astCreatePrintf(char* params);
+
+/*!
+ * Permet de créer un nœud de type return. Il permet de réserver à return un
+ * traitement particulier.
+ * \param expr L'expression que retourne le return.
+ * \return Le nœud créé.
+ */
+ASTNode* astCreateReturn(ASTNode* expr);
 
 #endif /* HEADER_AST */

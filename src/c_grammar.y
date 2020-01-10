@@ -66,6 +66,7 @@ ASTNode* generatedAST = NULL;
 %token              OP_NOT
 
 %token              MAIN
+%token              RETURN
 
 %token              IF
 %token              ELSE
@@ -187,6 +188,10 @@ instruction     : PRINTF SEMICOLON
                     {
                         $$ = astCreatePrintf($1);
                         free($1);
+                    }
+                | RETURN expression SEMICOLON
+                    {
+                        $$ = astCreateReturn($2);
                     }
                 | declaration_list SEMICOLON
                     {

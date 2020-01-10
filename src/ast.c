@@ -129,6 +129,7 @@ void astFree(ASTNode* ast) {
     case AST_OP_POST_INCREMENT:
     case AST_OP_POST_DECREMENT:
     case AST_OP_NOT:
+    case AST_RETURN:
         astFree(ast->opPlus);
         break;
 
@@ -402,4 +403,8 @@ ASTNode* astCreatePrintf(char* params) {
     }
 
     return node;
+}
+
+ASTNode* astCreateReturn(ASTNode* expr) {
+    return createUnaryOperator(expr, AST_RETURN);
 }

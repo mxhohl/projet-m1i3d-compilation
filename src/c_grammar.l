@@ -25,6 +25,7 @@ MULCOMMENT      "/*"([^*]*[*]+[^*/])*[^*]*[*]+"/"
 COMMENT         ({UNICOMMENT})|({MULCOMMENT})
 
 MAIN            "int main()"
+RETURN          "return"
 
 QUOTED_STR      \"(\\.|[^\\"])*\"
 PRINT           "printf("{QUOTED_STR}[^)]*")"
@@ -55,6 +56,7 @@ PRINT           "printf("{QUOTED_STR}[^)]*")"
                   return PRINTF; }
 
 {MAIN}          { return MAIN; }
+{RETURN}        { return RETURN; }
 
 int             { return TYPE_INT; }
 double          { return TYPE_DOUBLE; }
