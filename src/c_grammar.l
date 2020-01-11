@@ -41,8 +41,8 @@ PRINT           "printf("{QUOTED_STR}[^)]*")"
 "while"         { return WHILE; }
 "for"           { return FOR; }
 
-{PRINT}         { size_t len = yyleng -6;
-                  char* content = malloc(sizeof(char) * len);
+{PRINT}         { size_t len = yyleng - 8;
+                  char* content = malloc(sizeof(char) * (len + 1));
                   if (!content) {
                       logError(
                           "Impossible d'allouer la mémoire pour les "
@@ -51,7 +51,8 @@ PRINT           "printf("{QUOTED_STR}[^)]*")"
                           yylineno
                       );
                   }
-                  sscanf(yytext, "printf(%s)", content);
+                  memcpy(content, yytext + 7, len);
+                  content[len] = '\0';
                   yylval.str = content;
                   return PRINTF; }
 
