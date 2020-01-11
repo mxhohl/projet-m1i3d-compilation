@@ -1,5 +1,7 @@
 #include "cl_parameters.h"
 
+#include "logging.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -13,7 +15,7 @@ clParameters* clGetParameters(int argc, char** argv) {
 
     clParameters* parameters;
     if (!(parameters = calloc(1, sizeof(struct s_clParameters)))) {
-        fputs("Impossible d'allouter la mémoire pour les paramètres.", stderr);
+        logError("Impossible d'allouter la mémoire pour les paramètres.");
         exit(1);
     }
 
@@ -39,7 +41,7 @@ clParameters* clGetParameters(int argc, char** argv) {
                 ++i;
                 break;
             } else {
-                fprintf(stderr, "Option '%s' inconnue.\n", argv[i]);
+                logError("Option '%s' inconnue.\n", argv[i]);
                 clPrintUsage();
                 exit(20);
             }
@@ -48,15 +50,14 @@ clParameters* clGetParameters(int argc, char** argv) {
 
     int printTryHelp = i < argc;
     for (; i < argc; ++i) {
-        fprintf(
-            stderr, 
+        logWarning(
             "Le fichier d'entré est déjà spécifié. "
             "Paramètre '%s' ignoré.\n", 
             argv[i]
         );
     }
     if (printTryHelp) {
-        puts("Essayez 'ib3m -h' pour plus d'informations.\n");
+        logMessage("Essayez 'ib3m -h' pour plus d'informations.\n");
     }
 
     if (printVersion) {
@@ -71,7 +72,7 @@ clParameters* clGetParameters(int argc, char** argv) {
     }
 
     if (!parameters->inFile) {
-        fputs("Le fichier d'entré n'a pas été spécifié.\n", stderr);
+        logError("Le fichier d'entré n'a pas été spécifié.\n");
         clPrintUsage();
         clFree(parameters);
         exit(21);
@@ -98,7 +99,7 @@ void clFree(clParameters* cl) {
 }
 
 void clPrintUsage() {
-    puts(
+    logMessage(
         "Utilisation: ib3m [\e[4mOPTION\e[0m...] \e[4mFILE\e[0m\n\n"
         "DESCRIPTION\n"
         "   ib3m permet de remplacer des paternes connus dans "
@@ -119,7 +120,7 @@ void clPrintUsage() {
 }
 
 void clPrintVersion() {
-    puts(
+    logMessage(
         "ib3m est le projet du module Compilation de M1 Informatique du "
         "groupe 1B3M composé de :\n"
         "   - Maxime Desgrandchamps (I3D)\n"
