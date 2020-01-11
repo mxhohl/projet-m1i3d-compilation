@@ -288,7 +288,7 @@ static void printAst(ASTNode* root, FILE* out, size_t depth, size_t state) {
         fprintf(out, "Declaration de '%s' (variable)\n", root->varDeclaration);
         break;
     case AST_ARRAY_DECLARATION:
-        fprintf(out, "Declaration de '%s' (tableau) (taille: %lu)\n", 
+        fprintf(out, "Declaration de '%s' (tableau, taille: %lu)\n", 
             root->arrayDeclaration.varName, root->arrayDeclaration.size);
         break;
     case AST_VAR_ASSIGN:

@@ -36,7 +36,7 @@ static void printBlock(FILE* out,
 static void printASTToFile(FILE* out, 
                            ASTNode* root, SymbolTable* st, 
                            size_t depth, int firstInLine) {
-    if (firstInLine) {
+    if (firstInLine && root->type != AST_INST_LIST) {
         printIndent(out, depth, 0);
     }
 
@@ -61,22 +61,22 @@ static void printASTToFile(FILE* out,
         break;
     case AST_OP_ADD:
         printASTToFile(out, root->opAdd.left, st, depth, 0);
-        fprintf(out, "+");
+        fprintf(out, " + ");
         printASTToFile(out, root->opAdd.right, st, depth, 0);
         break;
     case AST_OP_SUBSTRACT:
         printASTToFile(out, root->opSubstract.left, st, depth, 0);
-        fprintf(out, "-");
+        fprintf(out, " - ");
         printASTToFile(out, root->opSubstract.right, st, depth, 0);
         break;
     case AST_OP_MULTIPLY:
         printASTToFile(out, root->opMultiply.left, st, depth, 0);
-        fprintf(out, "*");
+        fprintf(out, " * ");
         printASTToFile(out, root->opMultiply.right, st, depth, 0);
         break;
     case AST_OP_DIVIDE:
         printASTToFile(out, root->opDivide.left, st, depth, 0);
-        fprintf(out, "/");
+        fprintf(out, " / ");
         printASTToFile(out, root->opDivide.right, st, depth, 0);
         break;
     case AST_OP_PREF_INCREMENT:
@@ -98,32 +98,32 @@ static void printASTToFile(FILE* out,
 
     case AST_OP_LO:
         printASTToFile(out, root->opLower.left, st, depth, 0);
-        fprintf(out, "<");
+        fprintf(out, " < ");
         printASTToFile(out, root->opLower.right, st, depth, 0);
         break;
     case AST_OP_LE:
         printASTToFile(out, root->opLowerEq.left, st, depth, 0);
-        fprintf(out, "<=");
+        fprintf(out, " <= ");
         printASTToFile(out, root->opLowerEq.right, st, depth, 0);
         break;
     case AST_OP_GT:
         printASTToFile(out, root->opGreater.left, st, depth, 0);
-        fprintf(out, ">");
+        fprintf(out, " > ");
         printASTToFile(out, root->opGreater.right, st, depth, 0);
         break;
     case AST_OP_GE:
         printASTToFile(out, root->opGreaterEq.left, st, depth, 0);
-        fprintf(out, ">=");
+        fprintf(out, " >= ");
         printASTToFile(out, root->opGreaterEq.right, st, depth, 0);
         break;
     case AST_OP_EQ:
         printASTToFile(out, root->opEqual.left, st, depth, 0);
-        fprintf(out, "==");
+        fprintf(out, " == ");
         printASTToFile(out, root->opEqual.right, st, depth, 0);
         break;
     case AST_OP_NEQ:
         printASTToFile(out, root->opNotEqual.left, st, depth, 0);
-        fprintf(out, "!=");
+        fprintf(out, " != ");
         printASTToFile(out, root->opNotEqual.right, st, depth, 0);
         break;
     case AST_OP_NOT:
@@ -132,12 +132,12 @@ static void printASTToFile(FILE* out,
         break;
     case AST_OP_AND:
         printASTToFile(out, root->opAdd.left, st, depth, 0);
-        fprintf(out, "&&");
+        fprintf(out, " && ");
         printASTToFile(out, root->opAdd.right, st, depth, 0);
         break;
     case AST_OP_OR:
         printASTToFile(out, root->opOr.left, st, depth, 0);
-        fprintf(out, "||");
+        fprintf(out, " || ");
         printASTToFile(out, root->opOr.right, st, depth, 0);
         break;
 
@@ -186,7 +186,7 @@ static void printASTToFile(FILE* out,
         );
         break;
     case AST_VAR_ASSIGN:
-        fprintf(out, "%s=", root->varAssignment.varName);
+        fprintf(out, "%s = ", root->varAssignment.varName);
         printASTToFile(out, root->varAssignment.value, st, depth, 0);
         break;
     case AST_ARRAY_ASSIGN:
@@ -196,42 +196,56 @@ static void printASTToFile(FILE* out,
             root->arrayAssignment.varName
         );
         printASTToFile(out, root->arrayAssignment.pos, st, depth, 0);
-        fprintf(out, "]=");
+        fprintf(out, "] = ");
         printASTToFile(out, root->varAssignment.value, st, depth, 0);
         break;
 
     case AST_BRANCH:
-        fprintf(out, "if(");
+        fprintf(out, "if (");
         printASTToFile(out, root->branch.condition, st, depth, 0);
         fprintf(out, ")");
         printBlock(out, root->branch.ifBody, st, depth);
+        if (root->branch.elseBody) {
+            fprintf(out, " else");
+        }
         printBlock(out, root->branch.elseBody, st, depth);
         break;
     case AST_LOOP:
-        fprintf(out, "while(");
+        fprintf(out, "while (");
         printASTToFile(out, root->loop.condition, st, depth, 0);
         fprintf(out, ")");
         printBlock(out, root->loop.body, st, depth);
         break;
     case AST_INST_LIST:
         if (root->instructionList.current) {
-            printASTToFile(out, root->instructionList.current, st, depth, 1);
+            printASTToFile(
+                out, 
+                root->instructionList.current, 
+                st, 
+                depth, 
+                1
+            );
             if (needSemicolon(root->instructionList.current->type)) {
                 fprintf(out, ";");
             }
             fprintf(out, "\n");
         }
         if (root->instructionList.next) {
-            printASTToFile(out, root->instructionList.next, st, depth, 1);
+            printASTToFile(
+                out, 
+                root->instructionList.next, 
+                st, 
+                depth, 
+                1
+            );
             if (needSemicolon(root->instructionList.next->type)) {
                 fprintf(out, ";");
             }
-            fprintf(out, "\n");
         }
         break;
 
     case AST_PRINTF:
-        fprintf(out, "printf(%s);", root->printf);
+        fprintf(out, "printf(%s)", root->printf);
         break;
     case AST_RETURN:
         fprintf(out, "return ");
