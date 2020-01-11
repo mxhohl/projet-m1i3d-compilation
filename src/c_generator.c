@@ -14,6 +14,12 @@ static void printIndent(FILE* out, size_t depth, int onNewLine) {
     }
 }
 
+static int needSemicolon(astNodeType type) {
+    return type != AST_INST_LIST 
+        && type != AST_LOOP
+        && type != AST_BRANCH;
+}
+
 static void printBlock(FILE* out, 
                        ASTNode* block, SymbolTable* st, 
                        size_t depth) {
@@ -21,9 +27,9 @@ static void printBlock(FILE* out,
         fprintf(out, " {\n");
         printASTToFile(out, block, st, depth +1, 1);
         printIndent(out, depth, 1);
-        fprintf(out, "}\n");
+        fprintf(out, "}");
     } else {
-        fprintf(out, ";\n");
+        fprintf(out, ";");
     }
 }
 
@@ -210,10 +216,17 @@ static void printASTToFile(FILE* out,
     case AST_INST_LIST:
         if (root->instructionList.current) {
             printASTToFile(out, root->instructionList.current, st, depth, 1);
+            if (needSemicolon(root->instructionList.current->type)) {
+                fprintf(out, ";");
+            }
             fprintf(out, "\n");
         }
         if (root->instructionList.next) {
             printASTToFile(out, root->instructionList.next, st, depth, 1);
+            if (needSemicolon(root->instructionList.next->type)) {
+                fprintf(out, ";");
+            }
+            fprintf(out, "\n");
         }
         break;
 
