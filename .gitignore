@@ -6,7 +6,7 @@ doc
 build
 test.c
 .vscode
-test
+test/out
 
 
 ######################
