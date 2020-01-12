@@ -93,6 +93,15 @@ mrproper:
 
 rebuild: clean all
 
+test:
+	@cd test && $(MAKE) --no-print-directory
+
+clean_test:
+	@cd test && $(MAKE) --no-print-directory clean
+
+mrproper_test:
+	@cd test && $(MAKE) --no-print-directory mrproper
+
 doc:
 	@echo "	DOXYGEN	Doxyfile -> doc/"
 	@doxygen Doxyfile > /dev/null 2> /dev/null
@@ -101,4 +110,4 @@ TAGS: $(SRC_C)
 	@echo "	CTAGS"
 	@ctags -e $(SRC_C)
 
-.PHONY: all clean mrproper rebuild doc
+.PHONY: all clean mrproper rebuild doc test clean_test mrproper_test
