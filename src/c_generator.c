@@ -26,6 +26,9 @@ static void printBlock(FILE* out,
     if (block) {
         fprintf(out, " {\n");
         printASTToFile(out, block, st, depth +1, 1);
+        if (needSemicolon(block->type)) {
+            fprintf(out, ";");
+        }
         printIndent(out, depth, 1);
         fprintf(out, "}");
     } else {
