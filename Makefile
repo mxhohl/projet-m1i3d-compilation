@@ -41,7 +41,7 @@ SRC_OBJS = $(addprefix $(SRC_BUILDDIR)/,$(notdir $(SRC_C:.c=.c.o))) \
 SRC_DEPENDS = $(SRC_OBJS:.o=.d)
 
 OBJS = $(SRC_OBJS)
-EXE = $(BUILDDIR)/compilateur
+EXE = $(BUILDDIR)/ib3m
 ARTIFACTS = $(OBJS) $(EXE) $(SRC_DEPENDS) $(GEN)
 
 DIR_GUARD = @if [ ! -d $(@D) ]; then echo "	MKDIR	$(@D)"; \

@@ -7,6 +7,7 @@
 #include "cl_parameters.h"
 #include "ast.h"
 #include "symbol_table.h"
+#include "c_generator.h"
 
 extern ASTNode* parse_file(FILE*, SymbolTable*);
 
@@ -26,7 +27,13 @@ int doJob(clParameters* parameters) {
 
     FILE* inFile = fopen(parameters->inFile, "r");
     if (!inFile) {
-        logError("Unable to open file %s\n", parameters->inFile);
+        logError("Impossible d'ouvrir le fichier %s\n", parameters->inFile);
+        exit(1);
+    }
+
+    FILE* outFile = fopen(parameters->outFile, "w");
+    if (!outFile) {
+        logError("Impossible d'ouvrir le fichier %s\n", parameters->outFile);
         exit(1);
     }
 
@@ -58,7 +65,11 @@ int doJob(clParameters* parameters) {
         astPrint(ast, stdout);
     }
 */
+
+    astToC(outFile, ast, st);
+
     fclose(inFile);
+    fclose(outFile);
     astFree(ast);
     stFree(st);
 

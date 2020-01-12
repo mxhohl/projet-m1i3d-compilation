@@ -25,11 +25,12 @@ MULCOMMENT      "/*"([^*]*[*]+[^*/])*[^*]*[*]+"/"
 COMMENT         ({UNICOMMENT})|({MULCOMMENT})
 
 MAIN            "int main()"
+RETURN          "return"
 
 QUOTED_STR      \"(\\.|[^\\"])*\"
 PRINT           "printf("{QUOTED_STR}[^)]*")"
 
-PREPRODEFINE    "#define"[ ]{IDENTIFICATOR}[ ]{INTEGER}[\n]
+PREPRODEFINE    "#define"[ ]{IDENTIFICATOR}[ ]{INTEGER}
 
 %%
 
@@ -59,8 +60,8 @@ PREPRODEFINE    "#define"[ ]{IDENTIFICATOR}[ ]{INTEGER}[\n]
 "while"         { return WHILE; }
 "for"           { return FOR; }
 
-{PRINT}         { size_t len = yyleng -6;
-                  char* content = malloc(sizeof(char) * len);
+{PRINT}         { size_t len = yyleng - 8;
+                  char* content = malloc(sizeof(char) * (len + 1));
                   if (!content) {
                       logError(
                           "Impossible d'allouer la mémoire pour les "
@@ -69,11 +70,13 @@ PREPRODEFINE    "#define"[ ]{IDENTIFICATOR}[ ]{INTEGER}[\n]
                           yylineno
                       );
                   }
-                  sscanf(yytext, "printf(%s)", content);
+                  memcpy(content, yytext + 7, len);
+                  content[len] = '\0';
                   yylval.str = content;
                   return PRINTF; }
 
 {MAIN}          { return MAIN; }
+{RETURN}        { return RETURN; }
 
 int             { return TYPE_INT; }
 double          { return TYPE_DOUBLE; }
@@ -119,7 +122,6 @@ double          { return TYPE_DOUBLE; }
 "}"             { return RBRACE; }
 "["             { return LBRACKET; }
 "]"             { return RBRACKET; }
-"#"             { return NUMBER_SIGN; }
 
 [ \t\n]         { /* on saute les espaces */ }
 .	            { lexError("Caractère '%s' inconnu", yytext); }

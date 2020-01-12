@@ -70,6 +70,7 @@ ASTNode* generatedAST = NULL;
 %token              OP_NOT
 
 %token              MAIN
+%token              RETURN
 
 %token              IF
 %token              ELSE
@@ -88,7 +89,6 @@ ASTNode* generatedAST = NULL;
 %token              RBRACE
 %token              LBRACKET
 %token              RBRACKET
-%token              NUMBER_SIGN
 
 
 %type <ast>         file
@@ -158,27 +158,30 @@ file    : preprocessor main EOFILE
             {
                 $$ = $2;
             }
-        ;
 
 main    : MAIN LBRACE instruction_list RBRACE
             {
                 $$ = $3;
             }
-        ;
 
 /****************************************/
 /*****         PREPROCESSOR         *****/
 /****************************************/
 
 preprocessor    : 
-                | PREPRODEFINE preprocessor
+                | PREPRODEFINE preprocessor 
+                    {
+                        symbolShouldntExist($1.name);
+                        stAddConstantSymbol(st, $1.name, DT_INT, $1.val);
+                        free($1.name);
+                    }
                 ;
 
 /****************************************/
 /*****         INSTRUCTIONS         *****/
 /****************************************/
 
-instruction_block   : instruction 
+instruction_block   : instruction
                         {
                             $$ = $1;
                         }
@@ -202,6 +205,10 @@ instruction     : PRINTF SEMICOLON
                     {
                         $$ = astCreatePrintf($1);
                         free($1);
+                    }
+                | RETURN expression SEMICOLON
+                    {
+                        $$ = astCreateReturn($2);
                     }
                 | declaration_list SEMICOLON
                     {
@@ -348,6 +355,16 @@ declaration : ID
                     stAddArraySymbol(st, $1, DT_UNKNOWN, $3);
                     $$ = astCreateArrayDeclaration($1, $3);
                     free($1);
+                }
+            | ID LBRACKET ID RBRACKET
+                {
+                    symbolShouldntExist($1);
+                    if(symbolShouldExist($3)==1){
+                        int v = stGetStaticIntValue(st,$3);
+                        stAddArraySymbol(st, $1, DT_UNKNOWN, v);
+                        $$ = astCreateArrayDeclaration($1, v);
+                        free($1);
+                    }
                 }
             ;
 

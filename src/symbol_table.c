@@ -61,6 +61,9 @@ static void getVarTypeName(VarType type, char* name) {
     case VT_ARRAY:
         strcpy(name, "tableau");
         break;
+    case VT_CONSTANT:
+        strcpy(name, "constant");
+        break;
     default:
         strcpy(name, "unknown");
         break;
@@ -234,6 +237,42 @@ void stPrint(SymbolTable* st, FILE* out) {
             valueBuffer
         );
     }
+}
+
+int stAddConstantSymbol(SymbolTable* st,char* name, DataType dataType, int value) {
+    if (getSymbol(st, name)) {
+        return 1;
+    }
+
+    char* nameBuff = malloc(sizeof(char) * (strlen(name) +1));
+    Symbol* newSymbol;
+    if (!(newSymbol = malloc(sizeof(struct s_symbol)))) {
+        return 1;
+    }
+    strcpy(nameBuff, name);
+
+    newSymbol->name = nameBuff;
+    newSymbol->data_type = dataType;
+    newSymbol->var_type = VT_CONSTANT;
+    newSymbol->array_size = 0;
+    newSymbol->static_value = malloc(sizeof(union u_staticValue));
+    newSymbol->static_value->i = value;
+
+    newSymbol->next = NULL;
+    newSymbol->prev = st->last;
+
+    if (st->last) {
+        st->last->next = newSymbol;
+    }
+    st->last = newSymbol;
+
+    if (!st->first) {
+        st->first = newSymbol;
+    }
+
+    ++st->count;
+
+    return 0;
 }
 
 int stAddVariableSymbol(SymbolTable* st, const char* name, DataType dataType) {

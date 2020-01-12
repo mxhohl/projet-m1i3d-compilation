@@ -67,20 +67,284 @@ static void printAst(ASTNode* root, FILE* out, size_t depth, size_t state) {
     if (!root) {
         fprintf(out, "○\n");
         return;
+    } else {
+        fprintf(out, "[");
     }
 
     switch (root->type) {
     case AST_STATIC_DOUBLE:
-        fprintf(out, "[Static Double: %f\n", root->staticDouble);
+        fprintf(out, "Static: %f (double)\n", root->staticDouble);
         break;
     case AST_STATIC_INT:
-        fprintf(out, "[Static Int: %d\n", root->staticInt);
+        fprintf(out, "Static: %d (int)\n", root->staticInt);
         break;
     case AST_VARIABLE_REF:
-        fprintf(out, "[Variable Reference: %s\n", root->variableRef);
+        fprintf(out, "Reference: '%s'\n", root->variableRef);
+        break;
+    case AST_OP_PLUS:
+        fprintf(out, "+ (unaire)\n");
+        printAst(
+            root->opPlus, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_MINUS:
+        fprintf(out, "- (unaire)\n");
+        printAst(
+            root->opMinus, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_ADD:
+        fprintf(out, "+ (binaire)\n");
+        printAst(
+            root->opAdd.left, out, 
+            depth +1, state | (1 << (depth +1))
+        );
+        printAst(
+            root->opAdd.right, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_SUBSTRACT:
+        fprintf(out, "- (binaire)\n");
+        printAst(
+            root->opSubstract.left, out, 
+            depth +1, state | (1 << (depth +1))
+        );
+        printAst(
+            root->opSubstract.right, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_MULTIPLY:
+        fprintf(out, "*\n");
+        printAst(
+            root->opMultiply.left, out, 
+            depth +1, state | (1 << (depth +1))
+        );
+        printAst(
+            root->opMultiply.right, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_DIVIDE:
+        fprintf(out, "/\n");
+        printAst(
+            root->opDivide.left, out, 
+            depth +1, state | (1 << (depth +1))
+        );
+        printAst(
+            root->opDivide.right, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_PREF_INCREMENT:
+        fprintf(out, "++ (prefix)\n");
+        printAst(
+            root->opPrefIncrement, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_PREF_DECREMENT:
+        fprintf(out, "-- (prefix)\n");
+        printAst(
+            root->opPrefDecrement, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_POST_INCREMENT:
+        fprintf(out, "++ (postfix)\n");
+        printAst(
+            root->opPostIncrement, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_POST_DECREMENT:
+        fprintf(out, "-- (postfix)\n");
+        printAst(
+            root->opPostDecrement, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_LO:
+        fprintf(out, "<\n");
+        printAst(
+            root->opLower.left, out, 
+            depth +1, state | (1 << (depth +1))
+        );
+        printAst(
+            root->opLower.right, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_LE:
+        fprintf(out, "<=\n");
+        printAst(
+            root->opLowerEq.left, out, 
+            depth +1, state | (1 << (depth +1))
+        );
+        printAst(
+            root->opLowerEq.right, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_GT:
+        fprintf(out, ">\n");
+        printAst(
+            root->opGreater.left, out, 
+            depth +1, state | (1 << (depth +1))
+        );
+        printAst(
+            root->opGreater.right, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_GE:
+        fprintf(out, ">=\n");
+        printAst(
+            root->opGreaterEq.left, out, 
+            depth +1, state | (1 << (depth +1))
+        );
+        printAst(
+            root->opGreaterEq.right, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_EQ:
+        fprintf(out, "==\n");
+        printAst(
+            root->opEqual.left, out, 
+            depth +1, state | (1 << (depth +1))
+        );
+        printAst(
+            root->opEqual.right, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_NEQ:
+        fprintf(out, "!=\n");
+        printAst(
+            root->opNotEqual.left, out, 
+            depth +1, state | (1 << (depth +1))
+        );
+        printAst(
+            root->opNotEqual.right, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_NOT:
+        fprintf(out, "!\n");
+        printAst(
+            root->opNot, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_AND:
+        fprintf(out, "&&\n");
+        printAst(
+            root->opAnd.left, out, 
+            depth +1, state | (1 << (depth +1))
+        );
+        printAst(
+            root->opAnd.right, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_OR:
+        fprintf(out, "||\n");
+        printAst(
+            root->opOr.left, out, 
+            depth +1, state | (1 << (depth +1))
+        );
+        printAst(
+            root->opOr.right, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_ARRAY_ACCESS:
+        fprintf(out, "[]\n");
+        printAst(
+            root->opArrayAccess.array, out, 
+            depth +1, state | (1 << (depth +1))
+        );
+        printAst(
+            root->opArrayAccess.index, out, 
+            depth +1, state
+        );
+        break;
+    case AST_OP_CALL:
+        fprintf(out, "()\n");
+        printAst(
+            root->opCall.function, out, 
+            depth +1, state | (1 << (depth +1))
+        );
+        printAst(
+            root->opCall.parameters, out, 
+            depth +1, state
+        );
+        break;
+    case AST_VAR_DECLARATION:
+        fprintf(out, "Declaration de '%s' (variable)\n", root->varDeclaration);
+        break;
+    case AST_ARRAY_DECLARATION:
+        fprintf(out, "Declaration de '%s' (tableau, taille: %lu)\n", 
+            root->arrayDeclaration.varName, root->arrayDeclaration.size);
+        break;
+    case AST_VAR_ASSIGN:
+        fprintf(
+            out, 
+            "Assignation de '%s' (variable)\n", 
+            root->varAssignment.varName
+        );
+        printAst(
+            root->varAssignment.value, out, 
+            depth +1, state
+        );
+        break;
+    case AST_ARRAY_ASSIGN:
+        fprintf(
+            out, 
+            "Assignation de  '%s' (tableau)\n", 
+            root->arrayAssignment.varName
+        );
+        printAst(
+            root->arrayAssignment.pos, out, 
+            depth +1, state | (1 << (depth +1))
+        );
+        printAst(
+            root->arrayAssignment.value, out, 
+            depth +1, state
+        );
+        break;
+    case AST_BRANCH:
+        fprintf(out, "Embranchement\n");
+        printAst(
+            root->branch.condition, out, 
+            depth +1, state | (1 << (depth +1))
+        );
+        printAst(
+            root->branch.ifBody, out, 
+            depth +1, state | (1 << (depth +1))
+        );
+        printAst(
+            root->branch.elseBody, out, 
+            depth +1, state
+        );
+        break;
+    case AST_LOOP:
+        fprintf(out, "Boucle\n");
+        printAst(
+            root->loop.condition, out, 
+            depth +1, state | (1 << (depth +1))
+        );
+        printAst(
+            root->loop.body, out, 
+            depth +1, state
+        );
         break;
     case AST_INST_LIST:
-        fprintf(out, "[Instruction List\n");
+        fprintf(out, "Liste d'instruction\n");
         printAst(
             root->instructionList.current, out, 
             depth +1, state | (1 << (depth +1))
@@ -90,9 +354,18 @@ static void printAst(ASTNode* root, FILE* out, size_t depth, size_t state) {
             depth +1, state
         );
         break;
-    
+    case AST_PRINTF:
+        fprintf(out, "Printf (%s)\n", root->printf);
+        break;
+    case AST_RETURN:
+        fprintf(out, "Return\n");
+        printAst(
+            root->instructionReturn, out, 
+            depth +1, state
+        );
+        break;
     default:
-        fprintf(out, "[NOT IMPLEMENTED NODE\n");
+        fprintf(out, "NOT IMPLEMENTED NODE\n");
         break;
     }
 }
@@ -129,6 +402,7 @@ void astFree(ASTNode* ast) {
     case AST_OP_POST_INCREMENT:
     case AST_OP_POST_DECREMENT:
     case AST_OP_NOT:
+    case AST_RETURN:
         astFree(ast->opPlus);
         break;
 
@@ -402,4 +676,8 @@ ASTNode* astCreatePrintf(char* params) {
     }
 
     return node;
+}
+
+ASTNode* astCreateReturn(ASTNode* expr) {
+    return createUnaryOperator(expr, AST_RETURN);
 }

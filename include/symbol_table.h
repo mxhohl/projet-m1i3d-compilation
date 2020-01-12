@@ -16,6 +16,7 @@ typedef struct s_symbolTable SymbolTable;
 typedef enum e_varType {
     VT_VARIABLE,
     VT_ARRAY,
+    VT_CONSTANT,
     VT_UNKNOWN
 } VarType;
 
@@ -61,7 +62,7 @@ void stPrint(SymbolTable* st, FILE* out);
  * 100 si une erreur est survenue.
  */
 int stAddVariableSymbol(SymbolTable* st, const char* name, DataType dataType);
-
+int stAddConstantSymbol(SymbolTable* st, char* name, DataType dataType, int value);
 /*!
  * Permet d'ajouter un symbole de type tableau à la table.
  * \param st La table où ajouter le symbole.
