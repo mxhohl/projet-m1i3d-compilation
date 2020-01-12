@@ -240,7 +240,14 @@ for : FOR LPARENTHESIS
         for_expr
       RPARENTHESIS instruction_block
             {
-                $$ = astCreateForLoop($3, $5, $7, $9);
+                ASTNode* condition;
+                if (!$5) {
+                    stAddStaticInt(st, 1);
+                    condition = astCreateStaticInt(1);
+                } else {
+                    condition = $5;
+                }
+                $$ = astCreateForLoop($3, condition, $7, $9);
             }
 
 for_init    : declaration_list
@@ -250,6 +257,10 @@ for_init    : declaration_list
             | assignation_list
                 {
                     $$ = $1;
+                }
+            | /* epsilon */
+                {
+                    $$ = NULL;
                 }
             ;
 
