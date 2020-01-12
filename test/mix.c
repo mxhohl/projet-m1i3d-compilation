@@ -6,7 +6,7 @@ int main() {
     for(int i = 0; i < 3; i++)
         t1[i] = c;
 
-    a = b * 10;
+    a = 2 + b * 10;
     while(a > 0) {
         if(a != t1[1]+c) {
             a = a / b;
