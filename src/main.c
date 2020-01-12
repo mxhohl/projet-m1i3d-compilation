@@ -7,6 +7,7 @@
 #include "cl_parameters.h"
 #include "ast.h"
 #include "symbol_table.h"
+#include "blas.h"
 #include "c_generator.h"
 
 extern ASTNode* parse_file(FILE*, SymbolTable*);
@@ -55,16 +56,20 @@ int doJob(clParameters* parameters) {
     }
 
     if (parameters->printAst) {
+        fprintf(stdout, "AST avant replacement des BLAS\n");
         astPrint(ast, stdout);
     }
 
-    /* TODO: replace paterns with functions calls */
+    size_t blasCount = 0;
+    BLAS** blas = loadBlas(&blasCount);
 
-/*  TODO: décommenter une fois l'étape précédente éffectuée
+    size_t replacedCount = replaceBlasInAst(blas, blasCount, &ast);
+    logMessage("%lu BLAS remplacés dans l'AST.\n", replacedCount);
+
     if (parameters->printAst) {
+        fprintf(stdout, "AST après replacement des BLAS\n");
         astPrint(ast, stdout);
     }
-*/
 
     astToC(outFile, ast, st);
 
@@ -72,6 +77,7 @@ int doJob(clParameters* parameters) {
     fclose(outFile);
     astFree(ast);
     stFree(st);
+    freeAllBlas(blas, blasCount);
 
     return 0;
 }
