@@ -8,5 +8,10 @@ int main() {
         printf("%d\n", a);
     }
 
+    for (a = 0; a < 10;) {
+        printf("%d\n", a);
+        ++a;
+    }
+
     return 0;
 }
