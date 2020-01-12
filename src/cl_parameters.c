@@ -100,7 +100,7 @@ void clFree(clParameters* cl) {
 
 void clPrintUsage() {
     logMessage(
-        "Utilisation: ib3m [\e[4mOPTION\e[0m...] \e[4mFILE\e[0m\n\n"
+        "Utilisation: blaster [\e[4mOPTION\e[0m...] \e[4mFILE\e[0m\n\n"
         "DESCRIPTION\n"
         "   ib3m permet de remplacer des paternes connus dans "
         "le fichier \e[4mFILE\e[0m par des appels de fonctions\n"
